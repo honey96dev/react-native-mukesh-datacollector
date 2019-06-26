@@ -5,8 +5,12 @@ import GlobalFont from 'react-native-global-font';
 import AppContainer from "./src/routes";
 import {setBaseURL} from "./src/apis";
 import G from "./src/tools/G";
+import { Provider } from 'react-redux';
+import configureStore from './src/store';
 
 setBaseURL(G.Server.baseUrl);
+
+const store = configureStore();
 
 export default class App extends Component<{}> {
 
@@ -17,9 +21,11 @@ export default class App extends Component<{}> {
 
     render() {
         return (
-            <Root>
-                <AppContainer/>
-            </Root>
+            <Provider store={store}>
+                <Root>
+                    <AppContainer/>
+                </Root>
+            </Provider>
         );
     }
 }

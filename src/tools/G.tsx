@@ -1,6 +1,6 @@
 interface UserProfile {
     accessToken?: string,
-    role: string,
+    data: any,
 }
 
 interface Server {
@@ -19,6 +19,7 @@ const isValidEmail = (email: string) => {
 
 export default class G {
     static Server: Server = {isDeveloping: true, baseUrl: 'http://192.168.200.16:3000/'};
-    static UserProfile: UserProfile = {role: ''};
+    // static Server: Server = {isDeveloping: false, baseUrl: 'http://139.180.195.22/'};
+    static UserProfile: UserProfile = {data: {}};
     static isValidEmail = isValidEmail;
 }

@@ -36,7 +36,8 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                     .get("/" + resourceURL + queryString, {
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
-                        })
+                        }),
+                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -55,7 +56,8 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                     .post("/" + resourceURL, jsonBody, {
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
-                        })
+                        }),
+                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -77,7 +79,8 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                     .put("/" + resourceURL, jsonBody, {
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
-                        })
+                        }),
+                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -95,7 +98,8 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                     .patch("/" + resourceURL, jsonBody, {
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
-                        })
+                        }),
+                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -113,7 +117,8 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                     .delete("/" + resourceURL + queryString, {
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
-                        })
+                        }),
+                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);

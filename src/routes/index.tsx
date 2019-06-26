@@ -6,6 +6,7 @@ import {fadeIn, fromLeft, fromRight, zoomIn, zoomOut} from 'react-navigation-tra
 import SignInScreen from '../screens/signin/SignInScreen';
 import SignUpScreen from '../screens/signin/SignUpScreen';
 import DrawerScreen from "./DrawerScreen";
+import FormMainScreen from '../screens/form/FormMainScreen';
 import CreateFormScreen from '../screens/form/CreateFormScreen';
 
 import ROUTES from './ROUTES';
@@ -28,17 +29,31 @@ const SplashStack = createStackNavigator(
         transitionConfig: (nav: any) => fromRight(),
     });
 
-const MainDrawer = createDrawerNavigator(
+const FormStack = createStackNavigator(
     {
+        [ROUTES.FormMain]: {
+            screen: FormMainScreen,
+        },
         [ROUTES.CreateForm]: {
             screen: CreateFormScreen,
+        },
+    },
+    {
+        headerMode: "none",
+        transitionConfig: (nav: any) => fromRight(),
+    });
+
+const MainDrawer = createDrawerNavigator(
+    {
+        [ROUTES.FormStack]: {
+            screen: FormStack,
         },
         // [ROUTES.Profile]: {
         //     screen: ProfileScreen,
         // },
     },
     {
-        initialRouteName: ROUTES.CreateForm,
+        initialRouteName: ROUTES.FormStack,
         contentOptions: {
             activeTintColor: "#e91e63"
         },

@@ -209,8 +209,8 @@ export default class SignUpScreen extends Component<Props> {
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
                     <View style={styles.waveSec}>
-                        <AutoHeightImage source={Images.wave} width={wp(100)}/>
                         <Label style={[CommonStyles.title, Presets.h3.bold, styles.title]}>{STRINGS.signUp}</Label>
+                        <AutoHeightImage style={styles.banner} source={Images.banner} width={wp(100)}/>
                     </View>
                     <Label style={[CommonStyles.title, Presets.titleFont.regular]}></Label>
                     {/*<Label style={[styles.title, Presets.titleFont.regular]}>{STRINGS.signUp}</Label>*/}
@@ -326,9 +326,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
+        marginTop: Metrics.baseMargin,
         // position: 'absolute',
-        marginTop: - hp(15),
-        color: Colors.white,
+        // marginTop: - hp(15),
+        color: Colors.title,
+    },
+    banner: {
+        marginTop: Metrics.smallMargin,
     },
     credentialSec: {
         width: '100%',
@@ -384,6 +388,7 @@ const styles = StyleSheet.create({
         borderRadius: Metrics.baseDoubleRadius,
     },
     flatButton: {
+        marginTop: Metrics.baseMargin,
         width: '100%',
         // flexDirection: "column",
         justifyContent: "center",

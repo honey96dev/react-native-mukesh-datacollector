@@ -1,14 +1,13 @@
 import {NUMBERS} from "../tools";
-import {Colors, Metrics, Presets} from "../theme";
-import {Button, Col, Icon, Row, Spinner, Text, View} from "native-base";
+import {Colors, Presets} from "../theme";
+import {Button, Col, Icon, Row, Text, View} from "native-base";
 import Modal from 'react-native-modal';
 import React from "react";
 import {StyleSheet} from "react-native";
-import {widthPercentageToDP as wp} from "react-native-responsive-screen";
 import STRINGS from '../tools/STRINGS';
 import ModalStyles from '../theme/ModalStyles';
 
-export default (isShow: boolean, title: string, message: string, onYes?: () => void, onNo?: () => void, cancelable?: boolean) => {
+export default (isShow: boolean, title: string, message: string, onNo?: () => void, onYes?: () => void, cancelable?: boolean) => {
     return (
         <Modal
             style={ModalStyles.modal}

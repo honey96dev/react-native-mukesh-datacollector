@@ -113,10 +113,10 @@ export default class SignInScreen extends Component<Props> {
     //     //     }, 3500);
     //     // }, 1000);
     // };
-
-    onBackButtonPressed = () => {
-        this.props.navigation.navigate(ROUTES.Logo);
-    };
+    //
+    // onBackButtonPressed = () => {
+    //     this.props.navigation.navigate(ROUTES.Logo);
+    // };
 
     onShowPasswordButtonPressed = () => {
         this.setState({
@@ -174,12 +174,12 @@ export default class SignInScreen extends Component<Props> {
             .then((response: any) => {
                 console.log(response);
                 if (response.result == STRINGS.success) {
-                    G.UserProfile.role = response.role;
-                    if (response.role == STRINGS.user1) {
-                        this.props.navigation.navigate(ROUTES.CreateForm);
-                    } else if (response.role == STRINGS.user2) {
-                        this.props.navigation.navigate(ROUTES.CreateForm);
-                    } else if (response.role == STRINGS.admin) {
+                    G.UserProfile.data = response.data;
+                    if (response.data.role == STRINGS.user1) {
+                        this.props.navigation.navigate(ROUTES.FormMain);
+                    } else if (response.data.role == STRINGS.user2) {
+                        this.props.navigation.navigate(ROUTES.FormMain);
+                    } else if (response.data.role == STRINGS.admin) {
 
                     }
                 } else {
@@ -195,7 +195,7 @@ export default class SignInScreen extends Component<Props> {
                 this.setState({
                     showAlert: true,
                     alertTitle: STRINGS.error,
-                    alertMessage: STRINGS.passwordRequired,
+                    alertMessage: STRINGS.unknownServerError,
                 });
             })
             .finally(() => {
@@ -237,8 +237,8 @@ export default class SignInScreen extends Component<Props> {
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
                     <View style={styles.waveSec}>
-                        <AutoHeightImage source={Images.wave} width={wp(100)}/>
                         <Label style={[CommonStyles.title, Presets.h3.bold, styles.title]}>{STRINGS.signIn}</Label>
+                        <AutoHeightImage style={styles.banner} source={Images.banner} width={wp(100)}/>
                     </View>
                     {/*<Label style={[CommonStyles.title, Presets.h3.bold]}></Label>*/}
                     <View style={styles.credentialSec}>
@@ -352,9 +352,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
+        marginTop: Metrics.baseMargin,
         // position: 'absolute',
-        marginTop: - hp(15),
-        color: Colors.white,
+        // marginTop: - hp(15),
+        color: Colors.title,
+    },
+    banner: {
+        marginTop: Metrics.smallMargin,
     },
     credentialSec: {
         width: '100%',
@@ -407,7 +411,7 @@ const styles = StyleSheet.create({
         borderRadius: Metrics.baseDoubleRadius,
     },
     flatButton: {
-        // marginTop: Metrics.baseMargin,
+        marginTop: Metrics.baseMargin,
         // marginBottom: Metrics.baseMargin,
         width: '100%',
         // flexDirection: "column",

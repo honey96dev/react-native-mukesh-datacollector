@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Dimensions, Image, Platform, StyleSheet} from "react-native";
 import {NavigationScreenProps} from "react-navigation";
-import {Badge, Container, Content, Icon, Left, List, ListItem, Right, Text} from "native-base";
+import {Container, Content, Icon, Left, List, ListItem, Text} from "native-base";
 import {Colors, Images, Presets} from "../theme";
 import ROUTES from "./ROUTES";
 import {G, STRINGS} from "../tools";
@@ -14,8 +14,8 @@ const deviceWidth = Dimensions.get("window").width;
 // const drawerImage = require("../../assets/images/logo.png");
 const items = [
     {
-        name: STRINGS.createForm,
-        route: ROUTES.CreateForm,
+        name: STRINGS.formMain,
+        route: ROUTES.FormMain,
         iconType: "FontAwesome",
         iconName: "plus-circle",
         bg: "#C5F442",
@@ -81,14 +81,28 @@ class DrawerScreen extends Component<Props> {
                     // bounces={false}
                     style={styles.content}
                 >
-                    <Image source={Images.drawerCover} style={styles.drawerCover} />
+                    <Image source={Images.logo} style={styles.drawerCover} />
+                    <ListItem
+                        style={styles.listItem}
+                    >
+                        <Left>
+                            <Icon
+                                type={"FontAwesome"}
+                                name={"user"}
+                                style={[Presets.textFont.regular, styles.icon]}
+                            />
+                            <Text style={[Presets.textFont.semiBold, styles.text]}>
+                                Signed as: {G.UserProfile.data.name}
+                            </Text>
+                        </Left>
+                    </ListItem>
                     {/*<Image*/}
                     {/*square*/}
                     {/*style={styles.drawerImage} source={drawerImage} />*/}
 
                     <List>
                         {items.map((value: any) => {
-                            if (value.users.indexOf(G.UserProfile.role) !== -1) {
+                            if (value.users.indexOf(G.UserProfile.data.role) !== -1) {
                                 return (
                                     <ListItem
                                         style={styles.listItem}

@@ -5,6 +5,8 @@ const ROUTES = {
     SignIn : "SignIn",
     SignUp : "SignUp",
     MainDrawerStack : "MainDrawerStack",
+    FormStack: "FormStack",
+    FormMain: "FormMain",
     CreateForm: "CreateForm",
     SignOut : "SignIn",
 };

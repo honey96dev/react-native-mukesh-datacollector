@@ -12,9 +12,9 @@ const Colors = {
     textBackground: '#ffffff',
     textForeground: '#666666',
     textBorder: '#d7d7d7',
-    textIcon: '#d7d7d7',
+    textIcon: '#aaaaaa',
     textIconActive: '#9a99f6',
-    placeholder: '#d7d7d7',
+    placeholder: '#aaaaaa',
 
     modalTextBackground: '#ffffff',
     modalTextForeground: '#666666',
@@ -46,6 +46,7 @@ const Colors = {
 
     white: '#fff',
     lightGray: '#e8e8e8',
+    danger: '#ce3c3e',
 };
 
 export default Colors;

@@ -14,8 +14,18 @@ export default {
     alreadyRegistered: 'Already Registered?',
     registrationSuccess: 'Successfully registered!',
 
+    // ======FormMain==========
+    formMain: 'Forms',
+
     // ======CreateForm==========
     createForm: 'Create Form',
+    editForm: 'Edit Form',
+    columns: 'Columns',
+    newColumn: 'New Column',
+    editColumn: 'Edit Column',
+    formNameRequired: 'Form name is required!',
+    newColumnDescription: 'Input new column name and select the type of new column',
+    newColumnNameRequired: 'Column name is required!',
 
     // ======Common==========
     signOut: 'Sign out',
@@ -28,6 +38,9 @@ export default {
     cancel: 'Cancel',
     close: 'Close',
     send: 'Send',
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
     // username: 'Username',
     name: 'Name',
     email: 'Email',
