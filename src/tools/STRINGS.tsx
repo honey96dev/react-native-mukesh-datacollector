@@ -1,0 +1,52 @@
+export default {
+    // ======SignIn==========
+    signIn: 'Sign in',
+    notRegistered: 'Not Registered?',
+    exit: 'Exit',
+    exitConfirm: 'Do you want to exit this app?',
+    forgotPassword: 'Forgot Password?',
+    forgotPasswordDescription: 'Never was anything great achieved without danger',
+    passwordReseted: 'New password is sent to your email!',
+
+    // ======SignUp==========
+    selectRole: 'Select your role',
+    signUp: 'Sign up',
+    alreadyRegistered: 'Already Registered?',
+    registrationSuccess: 'Successfully registered!',
+
+    // ======CreateForm==========
+    createForm: 'Create Form',
+
+    // ======Common==========
+    signOut: 'Sign out',
+    appName: 'DataCollector',
+    yes: 'Yes',
+    no: 'No',
+    ok: 'OK',
+    okay: 'Okay',
+    recover: 'Recover',
+    cancel: 'Cancel',
+    close: 'Close',
+    send: 'Send',
+    // username: 'Username',
+    name: 'Name',
+    email: 'Email',
+    password: 'Password',
+    password2: 'Confirm Password',
+    paymentPassword: 'Payment Password',
+    registration: 'Registration',
+    usernameRequired: 'Username is required!',
+    emailRequired: 'Email is required!',
+    emailInvalid: 'Email is invalid!',
+    passwordRequired: 'Password is required!',
+    password2Required: 'Confirm is required!',
+    password2Mismatched: 'Confirm is different from Password!',
+    copied: 'Copied!',
+    successfullyCopied: 'Successfully copied!',
+    success: 'Success',
+    error: 'Error',
+    unknownServerError: 'Unknown server error!',
+    user1: 'User1',
+    user2: 'User2',
+    admin: 'Admin',
+}

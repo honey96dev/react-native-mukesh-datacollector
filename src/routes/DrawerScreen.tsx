@@ -1,0 +1,158 @@
+import React, {Component} from "react";
+import {Dimensions, Image, Platform, StyleSheet} from "react-native";
+import {NavigationScreenProps} from "react-navigation";
+import {Badge, Container, Content, Icon, Left, List, ListItem, Right, Text} from "native-base";
+import {Colors, Images, Presets} from "../theme";
+import ROUTES from "./ROUTES";
+import {G, STRINGS} from "../tools";
+
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
+
+// const drawerCover = require("../../assets/images/drawer-cover.jpeg");
+// const drawerImage = require("../../assets/images/logo-kitchen-sink.png");
+// const drawerImage = require("../../assets/images/logo.png");
+const items = [
+    {
+        name: STRINGS.createForm,
+        route: ROUTES.CreateForm,
+        iconType: "FontAwesome",
+        iconName: "plus-circle",
+        bg: "#C5F442",
+        users: ['User1', 'Admin'],
+    },
+    // {
+    //     name: STRINGS.createForm,
+    //     route: ROUTES.CreateForm,
+    //     iconType: "FontAwesome",
+    //     iconName: "plus-circle",
+    //     bg: "#C5F442",
+    //     users: ['User1', 'Admin'],
+    // },
+    // {
+    //     name: STRINGS.createForm,
+    //     route: ROUTES.CreateForm,
+    //     iconType: "FontAwesome",
+    //     iconName: "plus-circle",
+    //     bg: "#C5F442",
+    //     users: ['User1', 'User2', 'Admin'],
+    // },
+    // {
+    //     name: STRINGS.setting,
+    //     route: ROUTES.Setting,
+    //     iconType: "FontAwesome5",
+    //     iconName: "cog",
+    //     bg: "#C5F442",
+    // },
+    {
+        name: STRINGS.signOut,
+        route: ROUTES.SignOut,
+        iconType: "FontAwesome5",
+        iconName: "sign-out-alt",
+        bg: "#477EEA",
+        types: "11",
+        users: ['User1', 'User2', 'Admin'],
+    },
+];
+interface MyProps {
+
+}
+
+type Props = MyProps & NavigationScreenProps;
+
+class DrawerScreen extends Component<Props> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            shadowOffsetWidth: 1,
+            shadowRadius: 4,
+        };
+    }
+
+    onMenuClicked = (route: string) => {
+        this.props.navigation.navigate(route);
+        this.props.navigation.closeDrawer();
+    };
+
+    render() {
+        return (
+            <Container>
+                <Content
+                    // bounces={false}
+                    style={styles.content}
+                >
+                    <Image source={Images.drawerCover} style={styles.drawerCover} />
+                    {/*<Image*/}
+                    {/*square*/}
+                    {/*style={styles.drawerImage} source={drawerImage} />*/}
+
+                    <List>
+                        {items.map((value: any) => {
+                            if (value.users.indexOf(G.UserProfile.role) !== -1) {
+                                return (
+                                    <ListItem
+                                        style={styles.listItem}
+                                        button
+                                        // noBorder
+                                        onPress={() => this.onMenuClicked(value.route)}
+                                    >
+                                        <Left>
+                                            <Icon
+                                                // active
+                                                type={value.iconType}
+                                                name={value.iconName}
+                                                style={[Presets.textFont.regular, styles.icon]}
+                                            />
+                                            <Text style={[Presets.textFont.semiBold, styles.text]}>
+                                                {value.name}
+                                            </Text>
+                                        </Left>
+                                    </ListItem>
+                                );
+                            }
+                        })}
+                    </List>
+                </Content>
+            </Container>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    content: {
+        flex: 1,
+        backgroundColor: Colors.mainBackground,
+        top: -1
+    },
+    drawerCover: {
+        width: '100%',
+        height: deviceHeight / 4,
+        // width: 'unset',
+        position: "relative",
+        marginBottom: 10,
+        resizeMode: "stretch",
+    },
+    drawerImage: {
+        position: "absolute",
+        left: Platform.OS === "android" ? deviceWidth / 10 : deviceWidth / 9,
+        top: Platform.OS === "android" ? deviceHeight / 13 : deviceHeight / 12,
+        width: 210,
+        height: 75,
+        resizeMode: "stretch",
+    },
+    listItem: {
+        marginLeft: 0,
+        paddingLeft: 18,
+    },
+    icon: {
+        color: Colors.drawIconColor,
+        fontSize: 26,
+        width: 30
+    },
+    text: {
+        marginLeft: 20,
+        color: Colors.mainForeground,
+    },
+});
+
+export default DrawerScreen;
