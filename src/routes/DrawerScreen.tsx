@@ -57,6 +57,7 @@ const items = [
     },
 ];
 interface MyProps {
+    reportProcMode: string,
     setReportProcMode: (data: any) => void,
 }
 
@@ -73,7 +74,11 @@ class DrawerScreen extends Component<Props> {
 
     onMenuClicked = (route: string, name: string) => {
         if (name == STRINGS.maintenanceMain) {
-            this.props.setReportProcMode('rw');
+            if (G.UserProfile.data.role == STRINGS.admin) {
+                this.props.setReportProcMode('crw');
+            } else {
+                this.props.setReportProcMode('rw');
+            }
         } else if (name == STRINGS.reportMain) {
             this.props.setReportProcMode('r');
         }
@@ -181,7 +186,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state: any) => {
     return {
-
+        reportProcMode: state.reports.reportProcMode,
     }
 };
 

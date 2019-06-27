@@ -189,7 +189,7 @@ class ReportListScreen extends Component<Props> {
             }
         }
 
-        // console.log(reports, 'reportsByForm',  reportsByForm);
+        console.log('reportProcMode',  reportProcMode);
         return (
             <Container style={styles.container}>
                 <Header
@@ -207,7 +207,7 @@ class ReportListScreen extends Component<Props> {
                     <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == 'rw' ? STRINGS.maintenanceList : STRINGS.reportList}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        {reportProcMode == 'rw' && <Button
+                        {reportProcMode == 'crw' && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
@@ -254,7 +254,7 @@ class ReportListScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
                                             </Body>
                                             <Right>
-                                                {reportProcMode == 'rw' && <Button
+                                                {reportProcMode == 'crw' && <Button
                                                     transparent
                                                     onPress={() => self.onDeleteListItemButtonPressed(value)}
                                                 >

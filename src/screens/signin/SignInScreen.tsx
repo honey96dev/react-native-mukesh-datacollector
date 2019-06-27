@@ -187,7 +187,7 @@ class SignInScreen extends Component<Props> {
                         this.props.setReportProcMode('r');
                         this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.admin) {
-                        this.props.setReportProcMode('rw');
+                        this.props.setReportProcMode('crw');
                         this.props.navigation.navigate(ROUTES.FormMain);
                     }
                 } else {

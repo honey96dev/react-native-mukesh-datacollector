@@ -32,6 +32,7 @@ type Props = MyProps & NavigationScreenProps;
 
 export default class SignUpScreen extends Component<Props> {
     roles = [
+        {label: 'Admin', value: 'Admin'},
         {label: 'User1', value: 'User1'},
         {label: 'User2', value: 'User2'},
     ];
@@ -43,7 +44,7 @@ export default class SignUpScreen extends Component<Props> {
         name: '',
         password: '',
         password2: '',
-        role: this.roles[1].value,
+        role: this.roles[2].value,
 
         doingRegister: false,
         didRegister: false,

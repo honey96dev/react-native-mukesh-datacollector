@@ -306,7 +306,7 @@ class CreateReportScreen extends Component<Props> {
                                     <ListItem key={Math.random()} style={[styles.listItem]}>
                                         <Label style={Presets.h6.regular}>{column.name}</Label>
                                         {reportProcMode == 'r' && <Text style={[styles.credential2, Presets.textFont.regular]}>{column.type == 'Calendar' ? dateString : value}</Text>}
-                                        {reportProcMode == 'rw' && <Item regular style={styles.credentialItem}>
+                                        {(reportProcMode == 'crw' || reportProcMode == 'rw') && <Item regular style={styles.credentialItem}>
                                             {/*<Icon style={styles.credentialIcon} type={'FontAwesome'} name={'envelope'}/>*/}
                                             {column.type == 'Text' && <Text style={[styles.credential, Presets.textFont.regular]} onPress={() => self.onModalFieldPressed(column.name)}>{value}</Text>}
                                             {column.type == 'Calendar' && <DatePicker

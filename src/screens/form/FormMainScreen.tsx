@@ -30,6 +30,7 @@ import {connect} from 'react-redux';
 import {addForm, deleteForm, editForm, listForm, setCreateFormMode} from '../../actions/forms';
 
 interface MyProps {
+    reportProcMode: string,
     forms: Array<any>,
     listForm: (forms: Array<any>) => void,
     addForm: (form: any) => void,
@@ -196,7 +197,7 @@ class FormMainScreen extends Component<Props> {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
-        const {forms} = self.props;
+        const {forms, reportProcMode} = self.props;
         console.log(forms);
         return (
             <Container style={styles.container}>
@@ -214,12 +215,12 @@ class FormMainScreen extends Component<Props> {
                     <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.formMain}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        <Button
+                        {reportProcMode == 'crw' && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
                             <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="plus"/>
-                        </Button>
+                        </Button>}
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
@@ -248,14 +249,14 @@ class FormMainScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
                                             </Body>
                                             <Right>
-                                                <Button
+                                                {reportProcMode == 'crw' && <Button
                                                     transparent
                                                     onPress={() => self.onDeleteListItemButtonPressed(value)}
                                                 >
                                                     <Icon
                                                         style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
                                                         type={"FontAwesome5"} name="times"/>
-                                                </Button>
+                                                </Button>}
                                             </Right>
                                         </ListItem>
                                     );
@@ -347,6 +348,7 @@ const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
         forms: state.forms.forms,
+        reportProcMode: state.reports.reportProcMode,
     }
 };
 
