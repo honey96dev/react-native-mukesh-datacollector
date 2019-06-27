@@ -27,10 +27,10 @@ class SignInScreen extends Component<Props> {
     state = {
         showPassword: false,
 
-        // email: '',
-        // password: '',
-        email: 'honey96dev@gmail.com',
-        password: '123456',
+        email: '',
+        password: '',
+        // email: 'honey96dev@gmail.com',
+        // password: '123456',
 
         showModal: false,
         // resetPasswordEmail: '',
@@ -181,13 +181,13 @@ class SignInScreen extends Component<Props> {
                 if (response.result == STRINGS.success) {
                     G.UserProfile.data = response.data;
                     if (response.data.role == STRINGS.user1) {
-                        this.props.setReportProcMode('rw');
-                        this.props.navigation.navigate(ROUTES.FormMain);
+                        this.props.setReportProcMode(STRINGS.maintenanceMain);
+                        this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.user2) {
-                        this.props.setReportProcMode('r');
+                        this.props.setReportProcMode(STRINGS.maintenanceMain);
                         this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.admin) {
-                        this.props.setReportProcMode('crw');
+                        this.props.setReportProcMode(STRINGS.maintenanceMain);
                         this.props.navigation.navigate(ROUTES.FormMain);
                     }
                 } else {

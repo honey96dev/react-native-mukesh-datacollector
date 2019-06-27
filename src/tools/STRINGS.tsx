@@ -84,7 +84,7 @@ export default {
     success: 'Success',
     error: 'Error',
     unknownServerError: 'Unknown server error!',
-    user1: 'User1',
-    user2: 'User2',
+    user1: 'User Manager',
+    user2: 'User Staff',
     admin: 'Admin',
 }

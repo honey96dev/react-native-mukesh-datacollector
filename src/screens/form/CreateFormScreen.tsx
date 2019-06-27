@@ -20,7 +20,7 @@ import {
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, ModalStyles, Presets} from '../../theme';
 // @ts-ignore
-import {NUMBERS, STRINGS} from "../../tools";
+import {G, NUMBERS, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
 import Modal from "react-native-modal";
 import MyAlert from "../../components/MyAlert";
@@ -131,6 +131,7 @@ class CreateFormScreen extends Component<Props> {
 
     onSaveButtonPressed = () => {
         let {name, columns} = this.state;
+        const userId = G.UserProfile.data._id;
         name = name.trim();
         if (name.length == 0) {
             this.setState({
@@ -155,10 +156,12 @@ class CreateFormScreen extends Component<Props> {
             method = POST;
             url = api_list.formAdd;
             params = {
+                userId,
                 name,
                 columns,
             };
         }
+        console.log(params);
         // @ts-ignore
         fetch(method, url, params)
             .then((response: any) => {

@@ -19,7 +19,7 @@ import {
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
-import {STRINGS} from "../../tools";
+import {G, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
 import {api_list, DELETE, fetch, GET} from "../../apis";
 import {sprintf} from "sprintf-js";
@@ -27,7 +27,7 @@ import MyAlert from "../../components/MyAlert";
 import MyConfirm from "../../components/MyConfirm";
 
 import {connect} from 'react-redux';
-import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormId, setCreateReportMode} from '../../actions/reports';
+import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode} from '../../actions/reports';
 
 interface MyProps {
     reportProcMode: string,
@@ -98,6 +98,10 @@ class ReportListScreen extends Component<Props> {
         // // @ts-ignore
         // const index = columns.indexOf(value);
         // console.log(index);
+        const userRole = G.UserProfile.data.role;
+        if (userRole == STRINGS.user2 && this.props.reportProcMode == STRINGS.maintenanceMain)  {
+            return;
+        }
         this.props.setCreateReportMode({
             mode: 'edit',
             data: value,
@@ -178,6 +182,7 @@ class ReportListScreen extends Component<Props> {
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
 
         const {reports, selectedFormId, reportProcMode} = self.props;
+        const userRole = G.UserProfile.data.role;
         let report: any;
         let reportsByForm: Array<any> = [];
         for (report of reports) {
@@ -204,10 +209,10 @@ class ReportListScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == 'rw' ? STRINGS.maintenanceList : STRINGS.reportList}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == STRINGS.maintenanceMain ? STRINGS.maintenanceList : STRINGS.reportList}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        {reportProcMode == 'crw' && <Button
+                        {(reportProcMode == STRINGS.maintenanceMain) && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
@@ -254,7 +259,7 @@ class ReportListScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
                                             </Body>
                                             <Right>
-                                                {reportProcMode == 'crw' && <Button
+                                                {(userRole == STRINGS.admin && reportProcMode == STRINGS.maintenanceMain) && <Button
                                                     transparent
                                                     onPress={() => self.onDeleteListItemButtonPressed(value)}
                                                 >
@@ -262,7 +267,10 @@ class ReportListScreen extends Component<Props> {
                                                         style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
                                                         type={"FontAwesome5"} name="times"/>
                                                 </Button>}
-                                                {reportProcMode == 'r' && <Icon
+                                                {(userRole == STRINGS.user2 && reportProcMode == STRINGS.reportMain) && <Icon
+                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
+                                                    type={"FontAwesome5"} name="angle-right"/>}
+                                                {(userRole == STRINGS.user1) && <Icon
                                                     style={[Presets.h4.regular, CommonStyles.headerIcon]}
                                                     type={"FontAwesome5"} name="angle-right"/>}
                                             </Right>
@@ -378,8 +386,8 @@ const mapDispatchToProps = (dispatch: any) => {
         editReport: (prev: any, current: any) => {
             dispatch(editReport(prev, current));
         },
-        setSelectedFormId: (data: any) => {
-            dispatch(setSelectedFormId(data));
+        setSelectedFormData: (data: any) => {
+            dispatch(setSelectedFormData(data));
         },
         setCreateReportMode: (data: any) => {
             dispatch(setCreateReportMode(data));

@@ -32,9 +32,9 @@ type Props = MyProps & NavigationScreenProps;
 
 export default class SignUpScreen extends Component<Props> {
     roles = [
-        {label: 'Admin', value: 'Admin'},
-        {label: 'User1', value: 'User1'},
-        {label: 'User2', value: 'User2'},
+        {label: STRINGS.admin, value: STRINGS.admin},
+        {label: STRINGS.user1, value: STRINGS.user1},
+        {label: STRINGS.user2, value: STRINGS.user2},
     ];
     state = {
         showPassword: false,

@@ -14,7 +14,7 @@ import {
     List,
     ListItem,
     Right,
-    Title
+    Title, View
 } from 'native-base';
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
@@ -190,7 +190,7 @@ class ReportMainScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == 'rw' ? STRINGS.maintenanceMain : STRINGS.reportMain}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == STRINGS.maintenanceMain ? STRINGS.maintenanceMain : STRINGS.reportMain}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
                     </Right>
@@ -207,16 +207,16 @@ class ReportMainScreen extends Component<Props> {
                             {reports.map((value: any) => {
                                 if (value.name.includes(searchWord2)) {
                                     return (
-                                        <ListItem key={value._id} style={styles.listItem}
+                                        <ListItem style={styles.listItem}
                                                   onPress={() => self.onListItemPressed(value)}>
                                             {/*<Left style={styles.listItemLeft}>*/}
                                             {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
                                             {/*</Left>*/}
                                             <Body>
-                                            <Label style={Presets.h5.regular}>Form Name: {value.name}</Label>
-                                            <Label style={Presets.h6.regular}>Reports
-                                                Count: {value.reports.length}</Label>
+                                            <Label style={Presets.h5.regular}>{value.autoIndex}. {value.name}</Label>
+                                            {/*<Label style={Presets.h6.regular}>Reports*/}
+                                                {/*Count: {value.reports.length}</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
                                             </Body>
                                             <Right>
@@ -224,9 +224,12 @@ class ReportMainScreen extends Component<Props> {
                                                 {/*transparent*/}
                                                 {/*onPress={() => self.onDeleteListItemButtonPressed(value)}*/}
                                                 {/*>*/}
-                                                <Icon
-                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
-                                                    type={"FontAwesome5"} name="angle-right"/>
+                                                <View style={styles.listItemRight}>
+                                                    <Label style={Presets.h6.regular}>#{value.reports.length}</Label>
+                                                    <Icon
+                                                        style={[Presets.h4.regular, CommonStyles.headerIcon, styles.listItemIcon]}
+                                                        type={"FontAwesome5"} name="angle-right"/>
+                                                </View>
                                                 {/*</Button>*/}
                                             </Right>
                                         </ListItem>
@@ -300,9 +303,17 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start'
     },
+    listItemRight: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
     listItemDeleteIcon: {
         marginRight: 0,
         color: Colors.danger,
+    },
+    listItemIcon: {
+        marginLeft: Metrics.baseMargin,
+        marginRight: 0,
     },
     listItemAddButton: {
         marginTop: Metrics.baseMargin,

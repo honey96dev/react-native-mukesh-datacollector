@@ -19,7 +19,7 @@ import {
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
-import {STRINGS} from "../../tools";
+import {G, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
 import {api_list, DELETE, fetch, GET} from "../../apis";
 import {sprintf} from "sprintf-js";
@@ -198,6 +198,7 @@ class FormMainScreen extends Component<Props> {
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
         const {forms, reportProcMode} = self.props;
+        const userRole = G.UserProfile.data.role;
         console.log(forms);
         return (
             <Container style={styles.container}>
@@ -215,7 +216,7 @@ class FormMainScreen extends Component<Props> {
                     <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.formMain}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        {reportProcMode == 'crw' && <Button
+                        {userRole == STRINGS.admin && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
@@ -241,18 +242,19 @@ class FormMainScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
                                             {/*</Left>*/}
                                             <Body>
-                                            <Label style={Presets.h5.regular}>Name: {value.name}</Label>
-                                            <Label style={Presets.h6.regular}>Columns
-                                                Count: {value.columns.length}</Label>
+                                            <Label style={Presets.h5.regular}>{value.autoIndex}. {value.name}</Label>
+                                            {/*<Label style={Presets.h6.regular}>Columns*/}
+                                                {/*Count: {value.columns.length}</Label>*/}
                                             <Label style={Presets.h6.regular}>Modified
                                                 Date: {value.lastModifiedDate}</Label>
                                             {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
                                             </Body>
                                             <Right>
-                                                {reportProcMode == 'crw' && <Button
+                                                {userRole == STRINGS.admin && <Button
                                                     transparent
                                                     onPress={() => self.onDeleteListItemButtonPressed(value)}
                                                 >
+                                                    <Label style={Presets.h6.regular}>#{value.columns.length}</Label>
                                                     <Icon
                                                         style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
                                                         type={"FontAwesome5"} name="times"/>

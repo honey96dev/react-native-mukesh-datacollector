@@ -247,7 +247,7 @@ class CreateReportScreen extends Component<Props> {
 
         // console.log(columns);
         let headerTitle;
-        if (reportProcMode == 'rw') {
+        if (reportProcMode == STRINGS.maintenanceMain) {
             if (mode == 'edit') {
                 headerTitle = STRINGS.editReport;
             } else {
@@ -273,7 +273,7 @@ class CreateReportScreen extends Component<Props> {
                     <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{headerTitle}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        {reportProcMode == 'rw' && <Button
+                        {(reportProcMode == STRINGS.maintenanceMain) && <Button
                             transparent
                             onPress={self.onSaveButtonPressed}
                         >
@@ -305,8 +305,8 @@ class CreateReportScreen extends Component<Props> {
                                 return (
                                     <ListItem key={Math.random()} style={[styles.listItem]}>
                                         <Label style={Presets.h6.regular}>{column.name}</Label>
-                                        {reportProcMode == 'r' && <Text style={[styles.credential2, Presets.textFont.regular]}>{column.type == 'Calendar' ? dateString : value}</Text>}
-                                        {(reportProcMode == 'crw' || reportProcMode == 'rw') && <Item regular style={styles.credentialItem}>
+                                        {reportProcMode == STRINGS.reportMain && <Text style={[styles.credential2, Presets.textFont.regular]}>{column.type == 'Calendar' ? dateString : value}</Text>}
+                                        {(reportProcMode == STRINGS.maintenanceMain) && <Item regular style={styles.credentialItem}>
                                             {/*<Icon style={styles.credentialIcon} type={'FontAwesome'} name={'envelope'}/>*/}
                                             {column.type == 'Text' && <Text style={[styles.credential, Presets.textFont.regular]} onPress={() => self.onModalFieldPressed(column.name)}>{value}</Text>}
                                             {column.type == 'Calendar' && <DatePicker

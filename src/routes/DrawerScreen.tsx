@@ -21,7 +21,7 @@ const items = [
         iconType: "FontAwesome",
         iconName: "plus-circle",
         bg: "#C5F442",
-        users: ['User1', 'Admin'],
+        users: [STRINGS.admin],
     },
     {
         name: STRINGS.maintenanceMain,
@@ -29,7 +29,7 @@ const items = [
         iconType: "FontAwesome5",
         iconName: "hammer",
         bg: "#C5F442",
-        users: ['User1', 'Admin'],
+        users: [STRINGS.user1, STRINGS.user2, STRINGS.admin],
     },
     {
         name: STRINGS.reportMain,
@@ -37,7 +37,7 @@ const items = [
         iconType: "FontAwesome5",
         iconName: "binoculars",
         bg: "#C5F442",
-        users: ['User1', 'User2', 'Admin'],
+        users: [STRINGS.user1, STRINGS.user2, STRINGS.admin],
     },
     // {
     //     name: STRINGS.setting,
@@ -53,7 +53,7 @@ const items = [
         iconName: "sign-out-alt",
         bg: "#477EEA",
         types: "11",
-        users: ['User1', 'User2', 'Admin'],
+        users: [STRINGS.user1, STRINGS.user2, STRINGS.admin],
     },
 ];
 interface MyProps {
@@ -74,13 +74,9 @@ class DrawerScreen extends Component<Props> {
 
     onMenuClicked = (route: string, name: string) => {
         if (name == STRINGS.maintenanceMain) {
-            if (G.UserProfile.data.role == STRINGS.admin) {
-                this.props.setReportProcMode('crw');
-            } else {
-                this.props.setReportProcMode('rw');
-            }
+            this.props.setReportProcMode(STRINGS.maintenanceMain);
         } else if (name == STRINGS.reportMain) {
-            this.props.setReportProcMode('r');
+            this.props.setReportProcMode(STRINGS.reportMain);
         }
         // else {
         //     this.props.setReportProcMode('undefined');
