@@ -196,8 +196,8 @@ class SignInScreen extends Component<Props> {
                     });
                 }
             })
-            .catch(err => {
-                console.log(err);
+            .catch((err) => {
+                // console.log(err);
                 this.setState({
                     showAlert: true,
                     alertTitle: STRINGS.error,

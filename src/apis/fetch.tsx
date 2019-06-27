@@ -26,6 +26,7 @@ function getJsonBody(params: any) {
 
 export const fetch = (requestType: string, resourceURL: string, parameters: any) => {
     axios.defaults.headers.common["Authorization"] = "Bearer " + G.UserProfile.accessToken;
+    axios.defaults.timeout = G.axiosTimeout;
     switch (requestType) {
         case GET:
             // console.log("FETCH", axios.defaults.headers);
@@ -37,7 +38,6 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
                         }),
-                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -57,17 +57,12 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
                         }),
-                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
                     })
                     .catch(error => {
-                        if (error.response.data.email) {
-                            reject(error.response.data.email);
-                        } else if (error.response.data.password) {
-                            reject(error.response.data.password);
-                        }
+                        reject(error);
                     });
             });
 
@@ -80,7 +75,6 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
                         }),
-                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -99,7 +93,6 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
                         }),
-                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
@@ -118,7 +111,6 @@ export const fetch = (requestType: string, resourceURL: string, parameters: any)
                         cancelToken: new CancelToken(function executor(c) {
                             cancel = c;
                         }),
-                        timeout: 15000,
                     })
                     .then(response => {
                         resolve(response.data);
