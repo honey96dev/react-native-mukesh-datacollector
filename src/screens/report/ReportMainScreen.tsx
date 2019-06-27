@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {ScrollView, StyleSheet} from 'react-native';
+import {Animated, ScrollView, StyleSheet} from 'react-native';
 import {NavigationScreenProps} from "react-navigation";
 import {Body, Button, Container, Content, Header, Icon, Label, Left, List, ListItem, Right, Title} from 'native-base';
 // @ts-ignore
@@ -13,20 +13,22 @@ import MyAlert from "../../components/MyAlert";
 import MyConfirm from "../../components/MyConfirm";
 
 import {connect} from 'react-redux';
-import {addForm, deleteForm, editForm, listForm, setCreateFormMode} from '../../actions/forms';
+import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode} from '../../actions/reports';
 
 interface MyProps {
-    forms: Array<any>,
-    listForm: (forms: Array<any>) => void,
-    addForm: (form: any) => void,
-    deleteForm: (form: any) => void,
-    editForm: (prev: any, current: any) => void,
-    setCreateFormMode: (data: any) => void,
+    reports: Array<any>,
+    listReport: (items: Array<any>) => void,
+    addReport: (item: any) => void,
+    deleteReport: (item: any) => void,
+    deleteReportByForm: (form: any) => void,
+    editReport: (prev: any, current: any) => void,
+    setSelectedFormData: (data: any) => void,
+    setCreateReportMode: (data: any) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
 
-class FormMainScreen extends Component<Props> {
+class ReportMainScreen extends Component<Props> {
     state = {
         showAlert: false,
         alertTitle: '',
@@ -45,19 +47,19 @@ class FormMainScreen extends Component<Props> {
 
     componentDidMount(): void {
         // @ts-ignore
-        fetch(GET, api_list.formList, {})
+        fetch(GET, api_list.reportList, {})
             .then((response: any) => {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
                     // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listForm(response.data);
+                    this.props.listReport(response.data);
                 } else {
-                    this.props.listForm([]);
+                    this.props.listReport([]);
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.props.listForm([]);
+                this.props.listReport([]);
             });
             // .finally(() => {
             //     this.setState({
@@ -78,31 +80,23 @@ class FormMainScreen extends Component<Props> {
         })
     };
 
-    onPlusButtonPressed = () => {
-        this.props.setCreateFormMode({
-            mode: 'create',
-        });
-        this.props.navigation.navigate(ROUTES.CreateForm);
-    };
-
-
     onListItemPressed = (value: any) => {
         // let {forms} = this.state;
         // // @ts-ignore
         // const index = columns.indexOf(value);
-        // console.log(index);
-        this.props.setCreateFormMode({
-            mode: 'edit',
-            data: value,
+        // console.log(value);
+        this.props.setSelectedFormData({
+            id: value._id,
+            columns: value.columns,
         });
-        this.props.navigation.navigate(ROUTES.CreateForm);
+        this.props.navigation.navigate(ROUTES.ReportList);
     };
 
     onDeleteListItemButtonPressed = (value: any) => {
-        let {forms} = this.props;
+        let {reports} = this.props;
         // @ts-ignore
         const index = forms.indexOf(value);
-        // console.log(index);
+        console.log(index);
         // @ts-ignore
         const message = sprintf("Form name: %s", value.name);
         this.setState({
@@ -137,17 +131,17 @@ class FormMainScreen extends Component<Props> {
                 // @ts-ignore
                 fetch(GET, api_list.formList, {})
                     .then((response: any) => {
-                        // console.log(response);
+                        console.log(response);
                         if (response.result == STRINGS.success) {
                             // this.props.navigation.navigate(ROUTES.Profile);
-                            this.props.listForm(response.data);
+                            this.props.listReport(response.data);
                         } else {
-                            this.props.listForm([]);
+                            this.props.listReport([]);
                         }
                     })
                     .catch(err => {
                         console.log(err);
-                        this.props.listForm([]);
+                        this.props.listReport([]);
                     });
             });
     };
@@ -155,8 +149,7 @@ class FormMainScreen extends Component<Props> {
     render() {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
-        const {forms} = self.props;
-        console.log(forms);
+        const {reports} = self.props;
         return (
             <Container style={styles.container}>
                 <Header
@@ -170,32 +163,25 @@ class FormMainScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.formMain}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.reportMain}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        <Button
-                            transparent
-                            onPress={self.onPlusButtonPressed}
-                        >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="plus"/>
-                        </Button>
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {forms.map((value: any) => {
+                            {reports.map((value: any) => {
                                 return (
-                                    <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
+                                    <ListItem key={value._id} style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
                                         {/*<Left style={styles.listItemLeft}>*/}
                                             {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
                                         {/*</Left>*/}
                                         <Body>
-                                        <Label style={Presets.h5.regular}>Name: {value.name}</Label>
-                                        <Label style={Presets.h6.regular}>Columns Count: {value.columns.length}</Label>
-                                        <Label style={Presets.h6.regular}>Modified Date: {value.lastModifiedDate}</Label>
+                                        <Label style={Presets.h5.regular}>Form Name: {value.name}</Label>
+                                        <Label style={Presets.h6.regular}>Reports Count: {value.reports.length}</Label>
                                         {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
                                         </Body>
                                         <Right>
@@ -272,29 +258,35 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
-        forms: state.forms.forms,
+        reports: state.reports.items,
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        listForm: (forms: any) => {
-            dispatch(listForm(forms));
+        listReport: (forms: any) => {
+            dispatch(listReport(forms));
         },
-        addForm: (form: any) => {
-            dispatch(addForm(form));
+        addReport: (form: any) => {
+            dispatch(addReport(form));
         },
-        deleteForm: (form: any) => {
-            dispatch(deleteForm(form));
+        deleteReport: (form: any) => {
+            dispatch(deleteReport(form));
         },
-        editForm: (prev: any, current: any) => {
-            dispatch(editForm(prev, current));
+        deleteReportByForm: (form: any) => {
+            dispatch(deleteReportByForm(form));
         },
-        setCreateFormMode: (data: any) => {
-            dispatch(setCreateFormMode(data));
+        editReport: (prev: any, current: any) => {
+            dispatch(editReport(prev, current));
+        },
+        setSelectedFormData: (data: any) => {
+            dispatch(setSelectedFormData(data));
+        },
+        setCreateReportMode: (data: any) => {
+            dispatch(setCreateReportMode(data));
         },
     }
 };
 
 // @ts-ignore
-export default connect(mapStateToProps, mapDispatchToProps)(FormMainScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportMainScreen);

@@ -30,6 +30,7 @@ import {api_list, fetch, GET, POST, PUT} from "../../apis";
 
 import {connect} from 'react-redux';
 import {listForm, addForm, deleteForm, editForm} from '../../actions/forms';
+import {listReport} from '../../actions/reports';
 
 interface MyProps {
     forms: Array<any>,
@@ -38,6 +39,7 @@ interface MyProps {
     addForm: (form: any) => void,
     deleteForm: (form: any) => void,
     editForm: (form: any) => void,
+    listReport: (items: Array<any>) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -84,6 +86,7 @@ class CreateFormScreen extends Component<Props> {
 
         newItemName: '',
         newItemType: '',
+        newItemValues: '',
 
         deletingListItemIdx: -1,
 
@@ -146,14 +149,14 @@ class CreateFormScreen extends Component<Props> {
             params = {
                 _id: this.props.createFormMode.data._id,
                 name,
-                columns
+                columns,
             };
         } else {
             method = POST;
             url = api_list.formAdd;
             params = {
                 name,
-                columns
+                columns,
             };
         }
         // @ts-ignore
@@ -193,6 +196,21 @@ class CreateFormScreen extends Component<Props> {
                         // this.props.navigation.navigate(ROUTES.FormMain);
                     // });
             });
+        // @ts-ignore
+        fetch(GET, api_list.reportList, {})
+            .then((response: any) => {
+                // console.log(response);
+                if (response.result == STRINGS.success) {
+                    // this.props.navigation.navigate(ROUTES.Profile);
+                    this.props.listReport(response.data);
+                } else {
+                    this.props.listReport([]);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.props.listReport([]);
+            });
     };
 
     onKeyValueFieldChanged = (key: string, text: string) => {
@@ -205,6 +223,7 @@ class CreateFormScreen extends Component<Props> {
         this.setState({
             newItemName: '',
             newItemType: 'Text',
+            newItemValues: '',
             showModal: true,
             modalTitle: STRINGS.newColumn,
             modalMethod: 'add',
@@ -216,10 +235,11 @@ class CreateFormScreen extends Component<Props> {
         // @ts-ignore
         const index = columns.indexOf(value);
         console.log(index);
-        const {name, type} = columns[index];
+        const {name, type, values} = columns[index];
         this.setState({
             newItemName: name,
             newItemType: type,
+            newItemValues: values,
             showModal: true,
             modalTitle: STRINGS.editColumn,
             modalMethod: 'edit',
@@ -243,7 +263,7 @@ class CreateFormScreen extends Component<Props> {
     };
 
     onAddListItem = () => {
-        let {columns, newItemName, newItemType, modalMethod, deletingListItemIdx} = this.state;
+        let {columns, newItemName, newItemType, newItemValues, modalMethod, deletingListItemIdx} = this.state;
         newItemName = newItemName.trim();
         if (newItemName.length == 0) {
             this.setState({
@@ -255,7 +275,7 @@ class CreateFormScreen extends Component<Props> {
         }
         if (modalMethod == 'add') {
             // @ts-ignore
-            columns.push({name: newItemName, type: newItemType});
+            columns.push({name: newItemName, type: newItemType, values: newItemValues});
             this.setState({
                 columns: columns,
                 showModal: false,
@@ -266,6 +286,8 @@ class CreateFormScreen extends Component<Props> {
             columns[deletingListItemIdx].name = newItemName;
             // @ts-ignore
             columns[deletingListItemIdx].type = newItemType;
+            // @ts-ignore
+            columns[deletingListItemIdx].values = newItemValues;
             this.setState({
                 columns: columns,
                 showModal: false,
@@ -285,7 +307,7 @@ class CreateFormScreen extends Component<Props> {
     render() {
         const mode = this.props.createFormMode.mode;
         const self = this;
-        const {showModal, modalTitle, modalMethod, showAlert, alertTitle, alertMessage, showConfirm, confirmTitle, confirmMessage, name, columns, newItemName, newItemType, doingSave} = self.state;
+        const {showModal, modalTitle, modalMethod, showAlert, alertTitle, alertMessage, showConfirm, confirmTitle, confirmMessage, name, columns, newItemName, newItemType, newItemValues, doingSave} = self.state;
         const newItemTypes = self.newItemTypes;
         let columnIdx = -1;
         return (
@@ -405,6 +427,12 @@ class CreateFormScreen extends Component<Props> {
                                 {/*<Picker.Item label="Vietnamese" value="vt" />*/}
                             </Picker>
                         </Item>
+                        {(newItemType == 'Dropdown' || newItemType == 'Checkbox') &&
+                        <Item regular style={ModalStyles.credentialItem}>
+                            <Input style={[ModalStyles.credential, Presets.textFont.regular]} value={newItemValues}
+                                   placeholderTextColor={Colors.modalPlaceholder} placeholder={STRINGS.values}
+                                   onChangeText={(text) => self.onKeyValueFieldChanged('newItemValues', text)}/>
+                        </Item>}
                         <View style={ModalStyles.modalButtonsSec}>
                             <Row>
                                 <Col style={ModalStyles.modalButtonSec}>
@@ -526,6 +554,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         editForm: (prev: any, current: any) => {
             dispatch(editForm(prev, current));
+        },
+        listReport: (items: any) => {
+            dispatch(listReport(items));
         },
     }
 };

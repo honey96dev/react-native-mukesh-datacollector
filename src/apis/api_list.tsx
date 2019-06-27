@@ -6,4 +6,10 @@ export const api_list = {
     formAdd: 'forms/add',
     formEdit: 'forms/edit',
     formDelete: 'forms/delete',
+    reportList: 'reports/list',
+    reportListByForm: 'reports/listByForm',
+    reportAdd: 'reports/add',
+    reportEdit: 'reports/edit',
+    reportDelete: 'reports/delete',
+    reportDeleteByForm: 'reports/deleteByForm',
 };

@@ -172,11 +172,11 @@ export default class SignInScreen extends Component<Props> {
         // @ts-ignore
         fetch(POST, api_list.signIn, {email, password})
             .then((response: any) => {
-                console.log(response);
+                // console.log(response);
                 if (response.result == STRINGS.success) {
                     G.UserProfile.data = response.data;
                     if (response.data.role == STRINGS.user1) {
-                        this.props.navigation.navigate(ROUTES.FormMain);
+                        this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.user2) {
                         this.props.navigation.navigate(ROUTES.FormMain);
                     } else if (response.data.role == STRINGS.admin) {

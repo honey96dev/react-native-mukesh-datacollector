@@ -8,6 +8,10 @@ import SignUpScreen from '../screens/signin/SignUpScreen';
 import DrawerScreen from "./DrawerScreen";
 import FormMainScreen from '../screens/form/FormMainScreen';
 import CreateFormScreen from '../screens/form/CreateFormScreen';
+import ReportMainScreen from '../screens/report/ReportMainScreen';
+import ReportListScreen from '../screens/report/ReportListScreen';
+import CreateReportScreen from '../screens/report/CreateReportScreen';
+// import CreateFormScreen from '../screens/report/';
 
 import ROUTES from './ROUTES';
 
@@ -43,14 +47,31 @@ const FormStack = createStackNavigator(
         transitionConfig: (nav: any) => fromRight(),
     });
 
+const ReportStack = createStackNavigator(
+    {
+        [ROUTES.ReportMain]: {
+            screen: ReportMainScreen,
+        },
+        [ROUTES.ReportList]: {
+            screen: ReportListScreen,
+        },
+        [ROUTES.CreateReport]: {
+            screen: CreateReportScreen,
+        },
+    },
+    {
+        headerMode: "none",
+        transitionConfig: (nav: any) => fromRight(),
+    });
+
 const MainDrawer = createDrawerNavigator(
     {
         [ROUTES.FormStack]: {
             screen: FormStack,
         },
-        // [ROUTES.Profile]: {
-        //     screen: ProfileScreen,
-        // },
+        [ROUTES.ReportStack]: {
+            screen: ReportStack,
+        },
     },
     {
         initialRouteName: ROUTES.FormStack,

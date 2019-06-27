@@ -8,6 +8,10 @@ const ROUTES = {
     FormStack: "FormStack",
     FormMain: "FormMain",
     CreateForm: "CreateForm",
+    ReportStack: "ReportStack",
+    ReportMain: "ReportMain",
+    ReportList: "ReportList",
+    CreateReport: "CreateReport",
     SignOut : "SignIn",
 };
 

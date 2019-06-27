@@ -13,20 +13,23 @@ import MyAlert from "../../components/MyAlert";
 import MyConfirm from "../../components/MyConfirm";
 
 import {connect} from 'react-redux';
-import {addForm, deleteForm, editForm, listForm, setCreateFormMode} from '../../actions/forms';
+import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormId, setCreateReportMode} from '../../actions/reports';
 
 interface MyProps {
-    forms: Array<any>,
-    listForm: (forms: Array<any>) => void,
-    addForm: (form: any) => void,
-    deleteForm: (form: any) => void,
-    editForm: (prev: any, current: any) => void,
-    setCreateFormMode: (data: any) => void,
+    selectedFormId: any,
+    reports: Array<any>,
+    listReport: (items: Array<any>) => void,
+    addReport: (item: any) => void,
+    deleteReport: (item: any) => void,
+    deleteReportByForm: (form: any) => void,
+    editReport: (prev: any, current: any) => void,
+    setSelectedFormId: (data: any) => void,
+    setCreateReportMode: (data: any) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
 
-class FormMainScreen extends Component<Props> {
+class ReportListScreen extends Component<Props> {
     state = {
         showAlert: false,
         alertTitle: '',
@@ -36,34 +39,11 @@ class FormMainScreen extends Component<Props> {
         confirmTitle: '',
         confirmMessage: '',
 
-        deletingFormId: -1,
+        deletingReportId: -1,
     };
 
     constructor(props: Props) {
         super(props);
-    }
-
-    componentDidMount(): void {
-        // @ts-ignore
-        fetch(GET, api_list.formList, {})
-            .then((response: any) => {
-                // console.log(response);
-                if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listForm(response.data);
-                } else {
-                    this.props.listForm([]);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.listForm([]);
-            });
-            // .finally(() => {
-            //     this.setState({
-            //         doingRegister: false,
-            //     });
-            // });
     }
 
     hideAlert = () => {
@@ -78,11 +58,15 @@ class FormMainScreen extends Component<Props> {
         })
     };
 
+    onBackButtonPressed = () => {
+        this.props.navigation.navigate(ROUTES.ReportMain);
+    };
+
     onPlusButtonPressed = () => {
-        this.props.setCreateFormMode({
+        this.props.setCreateReportMode({
             mode: 'create',
         });
-        this.props.navigation.navigate(ROUTES.CreateForm);
+        this.props.navigation.navigate(ROUTES.CreateReport);
     };
 
 
@@ -91,31 +75,28 @@ class FormMainScreen extends Component<Props> {
         // // @ts-ignore
         // const index = columns.indexOf(value);
         // console.log(index);
-        this.props.setCreateFormMode({
+        this.props.setCreateReportMode({
             mode: 'edit',
             data: value,
         });
-        this.props.navigation.navigate(ROUTES.CreateForm);
+        this.props.navigation.navigate(ROUTES.CreateReport);
     };
 
     onDeleteListItemButtonPressed = (value: any) => {
-        let {forms} = this.props;
-        // @ts-ignore
-        const index = forms.indexOf(value);
-        // console.log(index);
         // @ts-ignore
         const message = sprintf("Form name: %s", value.name);
+        console.log(message);
         this.setState({
-            deletingFormId: value._id,
+            deletingReportId: value._id,
             showConfirm: true,
             confirmTitle: STRINGS.delete,
-            confirmMessage: message,
+            confirmMessage: STRINGS.deleteDescription,
         });
     };
 
-    onDeleteForm = () => {
+    onDeleteReport = () => {
         // @ts-ignore
-        fetch(DELETE, api_list.formDelete, {_id: this.state.deletingFormId})
+        fetch(DELETE, api_list.reportDelete, {_id: this.state.deletingReportId})
             .then((response: any) => {
                 this.setState({
                     showConfirm: false,
@@ -135,28 +116,54 @@ class FormMainScreen extends Component<Props> {
             })
             .finally(() => {
                 // @ts-ignore
-                fetch(GET, api_list.formList, {})
+                fetch(GET, api_list.reportList, {})
                     .then((response: any) => {
-                        // console.log(response);
+                        console.log(response);
                         if (response.result == STRINGS.success) {
                             // this.props.navigation.navigate(ROUTES.Profile);
-                            this.props.listForm(response.data);
+                            this.props.listReport(response.data);
                         } else {
-                            this.props.listForm([]);
+                            this.props.listReport([]);
                         }
                     })
                     .catch(err => {
                         console.log(err);
-                        this.props.listForm([]);
+                        this.props.listReport([]);
                     });
             });
+    };
+
+    renderListItemBody = (value: any) => {
+
+        let items: Array<any> = [];
+        Object.entries(value).forEach((entry: any) => {
+            let key = entry[0];
+            let value = entry[1];
+            if (key == '_id' || key == 'formId') return;
+            items.push(
+                <Label style={Presets.h5.regular}>{key}: {value}</Label>
+            )
+        });
+        console.log('items', items);
+        return items;
     };
 
     render() {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
-        const {forms} = self.props;
-        console.log(forms);
+        const {reports, selectedFormId} = self.props;
+        let report: any;
+        let reportsByForm: Array<any> = [];
+        for (report of reports) {
+            // console.log(report, selectedFormId);
+            if (report._id == selectedFormId) {
+                // console.log(report);
+                reportsByForm = report.reports;
+                break;
+            }
+        }
+
+        // console.log(reports, 'reportsByForm',  reportsByForm);
         return (
             <Container style={styles.container}>
                 <Header
@@ -164,13 +171,14 @@ class FormMainScreen extends Component<Props> {
                     <Left style={CommonStyles.headerLeft}>
                         <Button
                             transparent
-                            onPress={() => this.props.navigation.openDrawer()}
+                            onPress={self.onBackButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"}
+                                  name="angle-left"/>
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.formMain}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.reportList}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
                         <Button
@@ -185,18 +193,15 @@ class FormMainScreen extends Component<Props> {
                     <Body style={styles.body}>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {forms.map((value: any) => {
+                            {reportsByForm.map((value: any) => {
                                 return (
-                                    <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
-                                        {/*<Left style={styles.listItemLeft}>*/}
-                                            {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
-                                            {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
-                                        {/*</Left>*/}
+                                    <ListItem key={value._id} style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
                                         <Body>
-                                        <Label style={Presets.h5.regular}>Name: {value.name}</Label>
-                                        <Label style={Presets.h6.regular}>Columns Count: {value.columns.length}</Label>
+                                        {/*{self.renderListItemBody(value)}*/}
+                                        <Label style={Presets.h5.regular}>{value.byWho}</Label>
                                         <Label style={Presets.h6.regular}>Modified Date: {value.lastModifiedDate}</Label>
-                                        {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
+                                        {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
+                                        {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
                                         </Body>
                                         <Right>
                                             <Button
@@ -216,7 +221,7 @@ class FormMainScreen extends Component<Props> {
                     </Body>
                 </Content>
                 {MyAlert(showAlert, alertTitle, alertMessage, self.hideAlert)}
-                {MyConfirm(showConfirm, confirmTitle, confirmMessage, self.hideConfirm, self.onDeleteForm)}
+                {MyConfirm(showConfirm, confirmTitle, confirmMessage, self.hideConfirm, self.onDeleteReport)}
             </Container>
         );
     }
@@ -272,29 +277,36 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
-        forms: state.forms.forms,
+        selectedFormId: state.reports.selectedFormId,
+        reports: state.reports.items,
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        listForm: (forms: any) => {
-            dispatch(listForm(forms));
+        listReport: (forms: any) => {
+            dispatch(listReport(forms));
         },
-        addForm: (form: any) => {
-            dispatch(addForm(form));
+        addReport: (form: any) => {
+            dispatch(addReport(form));
         },
-        deleteForm: (form: any) => {
-            dispatch(deleteForm(form));
+        deleteReport: (form: any) => {
+            dispatch(deleteReport(form));
         },
-        editForm: (prev: any, current: any) => {
-            dispatch(editForm(prev, current));
+        deleteReportByForm: (form: any) => {
+            dispatch(deleteReportByForm(form));
         },
-        setCreateFormMode: (data: any) => {
-            dispatch(setCreateFormMode(data));
+        editReport: (prev: any, current: any) => {
+            dispatch(editReport(prev, current));
+        },
+        setSelectedFormId: (data: any) => {
+            dispatch(setSelectedFormId(data));
+        },
+        setCreateReportMode: (data: any) => {
+            dispatch(setCreateReportMode(data));
         },
     }
 };
 
 // @ts-ignore
-export default connect(mapStateToProps, mapDispatchToProps)(FormMainScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportListScreen);

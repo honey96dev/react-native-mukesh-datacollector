@@ -27,6 +27,16 @@ export default {
     newColumnDescription: 'Input new column name and select the type of new column',
     newColumnNameRequired: 'Column name is required!',
 
+    // ======ReportMain==========
+    reportMain: 'Reports',
+
+    // ======ReportList==========
+    reportList: 'Report List',
+
+    // ======CreateReport==========
+    createReport: 'Create Report',
+    editReport: 'Edit Report',
+
     // ======Common==========
     signOut: 'Sign out',
     appName: 'DataCollector',
@@ -41,8 +51,11 @@ export default {
     add: 'Add',
     edit: 'Edit',
     delete: 'Delete',
+    deleteDescription: 'Do you want to delete this?',
     // username: 'Username',
     name: 'Name',
+    values: 'Values',
+    value: 'Value',
     email: 'Email',
     password: 'Password',
     password2: 'Confirm Password',

@@ -21,14 +21,14 @@ const items = [
         bg: "#C5F442",
         users: ['User1', 'Admin'],
     },
-    // {
-    //     name: STRINGS.createForm,
-    //     route: ROUTES.CreateForm,
-    //     iconType: "FontAwesome",
-    //     iconName: "plus-circle",
-    //     bg: "#C5F442",
-    //     users: ['User1', 'Admin'],
-    // },
+    {
+        name: STRINGS.reportMain,
+        route: ROUTES.ReportMain,
+        iconType: "FontAwesome",
+        iconName: "clipboard",
+        bg: "#C5F442",
+        users: ['User1', 'Admin'],
+    },
     // {
     //     name: STRINGS.createForm,
     //     route: ROUTES.CreateForm,
