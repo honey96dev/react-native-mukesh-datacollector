@@ -1,4 +1,4 @@
-import {LIST_REPORT, LIST_REPORT_BY_FORM, ADD_REPORT, DELETE_REPORT, DELETE_REPORT_BY_FORM, EDIT_REPORT, SET_SELECTED_FORM_DATA, SET_CREATE_REPORT_MODE} from './reports.types';
+import {LIST_REPORT, LIST_REPORT_BY_FORM, ADD_REPORT, DELETE_REPORT, DELETE_REPORT_BY_FORM, EDIT_REPORT, SET_SELECTED_FORM_DATA, SET_CREATE_REPORT_MODE, SET_REPORT_PROC_MODE} from './reports.types';
 
 const listReport = (items: Array<any>) => {
     return {
@@ -50,6 +50,12 @@ const setCreateReportMode = (mode: object) => {
         payload: mode,
     }
 };
+const setReportProcMode = (mode: string) => {
+    return {
+        type: SET_REPORT_PROC_MODE,
+        payload: mode,
+    }
+};
 
 export {
     listReport,
@@ -60,4 +66,5 @@ export {
     editReport,
     setSelectedFormData,
     setCreateReportMode,
+    setReportProcMode,
 }

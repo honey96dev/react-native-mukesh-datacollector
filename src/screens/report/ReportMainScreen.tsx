@@ -13,9 +13,10 @@ import MyAlert from "../../components/MyAlert";
 import MyConfirm from "../../components/MyConfirm";
 
 import {connect} from 'react-redux';
-import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode} from '../../actions/reports';
+import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode, setReportProcMode} from '../../actions/reports';
 
 interface MyProps {
+    reportProcMode: string,
     reports: Array<any>,
     listReport: (items: Array<any>) => void,
     addReport: (item: any) => void,
@@ -24,6 +25,7 @@ interface MyProps {
     editReport: (prev: any, current: any) => void,
     setSelectedFormData: (data: any) => void,
     setCreateReportMode: (data: any) => void,
+    setReportProcMode: (data: any) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -149,7 +151,7 @@ class ReportMainScreen extends Component<Props> {
     render() {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
-        const {reports} = self.props;
+        const {reports, reportProcMode} = self.props;
         return (
             <Container style={styles.container}>
                 <Header
@@ -163,7 +165,7 @@ class ReportMainScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.reportMain}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == 'rw' ? STRINGS.maintenanceMain : STRINGS.reportMain}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
                     </Right>
@@ -185,14 +187,14 @@ class ReportMainScreen extends Component<Props> {
                                         {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
                                         </Body>
                                         <Right>
-                                            <Button
-                                                transparent
-                                                onPress={() => self.onDeleteListItemButtonPressed(value)}
-                                            >
+                                            {/*<Button*/}
+                                                {/*transparent*/}
+                                                {/*onPress={() => self.onDeleteListItemButtonPressed(value)}*/}
+                                            {/*>*/}
                                                 <Icon
-                                                    style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
-                                                    type={"FontAwesome5"} name="times"/>
-                                            </Button>
+                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
+                                                    type={"FontAwesome5"} name="angle-right"/>
+                                            {/*</Button>*/}
                                         </Right>
                                     </ListItem>
                                 );
@@ -259,6 +261,7 @@ const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
         reports: state.reports.items,
+        reportProcMode: state.reports.reportProcMode,
     }
 };
 
@@ -284,6 +287,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         setCreateReportMode: (data: any) => {
             dispatch(setCreateReportMode(data));
+        },
+        setReportProcMode: (data: any) => {
+            dispatch(setReportProcMode(data));
         },
     }
 };

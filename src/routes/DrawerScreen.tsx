@@ -5,6 +5,8 @@ import {Container, Content, Icon, Left, List, ListItem, Text} from "native-base"
 import {Colors, Images, Presets} from "../theme";
 import ROUTES from "./ROUTES";
 import {G, STRINGS} from "../tools";
+import {connect} from 'react-redux';
+import {setReportProcMode} from '../actions/reports';
 
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
@@ -22,21 +24,21 @@ const items = [
         users: ['User1', 'Admin'],
     },
     {
-        name: STRINGS.reportMain,
+        name: STRINGS.maintenanceMain,
         route: ROUTES.ReportMain,
-        iconType: "FontAwesome",
-        iconName: "clipboard",
+        iconType: "FontAwesome5",
+        iconName: "hammer",
         bg: "#C5F442",
         users: ['User1', 'Admin'],
     },
-    // {
-    //     name: STRINGS.createForm,
-    //     route: ROUTES.CreateForm,
-    //     iconType: "FontAwesome",
-    //     iconName: "plus-circle",
-    //     bg: "#C5F442",
-    //     users: ['User1', 'User2', 'Admin'],
-    // },
+    {
+        name: STRINGS.reportMain,
+        route: ROUTES.ReportMain,
+        iconType: "FontAwesome5",
+        iconName: "binoculars",
+        bg: "#C5F442",
+        users: ['User1', 'User2', 'Admin'],
+    },
     // {
     //     name: STRINGS.setting,
     //     route: ROUTES.Setting,
@@ -55,7 +57,7 @@ const items = [
     },
 ];
 interface MyProps {
-
+    setReportProcMode: (data: any) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -69,7 +71,15 @@ class DrawerScreen extends Component<Props> {
         };
     }
 
-    onMenuClicked = (route: string) => {
+    onMenuClicked = (route: string, name: string) => {
+        if (name == STRINGS.maintenanceMain) {
+            this.props.setReportProcMode('rw');
+        } else if (name == STRINGS.reportMain) {
+            this.props.setReportProcMode('r');
+        }
+        // else {
+        //     this.props.setReportProcMode('undefined');
+        // }
         this.props.navigation.navigate(route);
         this.props.navigation.closeDrawer();
     };
@@ -108,7 +118,7 @@ class DrawerScreen extends Component<Props> {
                                         style={styles.listItem}
                                         button
                                         // noBorder
-                                        onPress={() => this.onMenuClicked(value.route)}
+                                        onPress={() => this.onMenuClicked(value.route, value.name)}
                                     >
                                         <Left>
                                             <Icon
@@ -169,4 +179,19 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DrawerScreen;
+const mapStateToProps = (state: any) => {
+    return {
+
+    }
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        setReportProcMode: (data: any) => {
+            dispatch(setReportProcMode(data));
+        },
+    }
+};
+
+// @ts-ignore
+export default connect(mapStateToProps, mapDispatchToProps)(DrawerScreen);

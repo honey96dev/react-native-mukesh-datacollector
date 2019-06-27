@@ -51,6 +51,7 @@ interface MyProps {
     editReport: (prev: any, current: any) => void,
     setSelectedFormData: (data: any) => void,
     setCreateReportMode: (data: any) => void,
+    reportProcMode: string,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -94,31 +95,6 @@ class CreateReportScreen extends Component<Props> {
         showAlert: false,
         alertTitle: '',
         alertMessage: '',
-
-        // showConfirm: false,
-        // confirmTitle: '',
-        // confirmMessage: '',
-
-
-        // name: '',
-        // columns: [
-        //     // {name: 'Test1', type: 'Text'},
-        //     // {name: 'Test2', type: 'Dropdown'},
-        //     // {name: 'Test3', type: 'Calendar'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        //     // {name: 'Test4', type: 'Checkbox'},
-        // ],
-
-        // doingSave: false,
     };
 
     constructor(props: Props) {
@@ -264,11 +240,22 @@ class CreateReportScreen extends Component<Props> {
     render() {
         const mode = this.props.createReportMode.mode;
         const columns = this.props.selectedFormColumns;
+        const reportProcMode = this.props.reportProcMode;
         const self = this;
         const state = self.state;
         const {showModal, modalTitle, modalMessage, modalValue, showAlert, alertTitle, alertMessage} = state;
 
-        console.log(columns);
+        // console.log(columns);
+        let headerTitle;
+        if (reportProcMode == 'rw') {
+            if (mode == 'edit') {
+                headerTitle = STRINGS.editReport;
+            } else {
+                headerTitle = STRINGS.createReport;
+            }
+        } else if (reportProcMode == 'r') {
+            headerTitle = STRINGS.viewReport;
+        }
         return (
             <Container style={styles.container}>
                 <Header
@@ -283,16 +270,16 @@ class CreateReportScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{mode == 'edit' ? STRINGS.editReport : STRINGS.createReport}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{headerTitle}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        <Button
+                        {reportProcMode == 'rw' && <Button
                             transparent
                             onPress={self.onSaveButtonPressed}
                         >
                             <Icon style={[Presets.h2.regular, CommonStyles.headerIcon]} type={"MaterialIcons"}
                                   name="save"/>
-                        </Button>
+                        </Button>}
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
@@ -318,9 +305,10 @@ class CreateReportScreen extends Component<Props> {
                                 return (
                                     <ListItem key={Math.random()} style={[styles.listItem]}>
                                         <Label style={Presets.h6.regular}>{column.name}</Label>
-                                        <Item regular style={styles.credentialItem}>
+                                        {reportProcMode == 'r' && <Text style={[styles.credential2, Presets.textFont.regular]}>{column.type == 'Calendar' ? dateString : value}</Text>}
+                                        {reportProcMode == 'rw' && <Item regular style={styles.credentialItem}>
                                             {/*<Icon style={styles.credentialIcon} type={'FontAwesome'} name={'envelope'}/>*/}
-                                            {column.type == 'Text' && <Text style={[styles.credential, Presets.textFont.regular]}  onPress={() => self.onModalFieldPressed(column.name)}>{value}</Text>}
+                                            {column.type == 'Text' && <Text style={[styles.credential, Presets.textFont.regular]} onPress={() => self.onModalFieldPressed(column.name)}>{value}</Text>}
                                             {column.type == 'Calendar' && <DatePicker
 
                                                 placeHolderTextStyle={styles.picker}
@@ -405,7 +393,7 @@ class CreateReportScreen extends Component<Props> {
                                                     submitButtonText="Submit"
                                                 />
                                             </View>}
-                                        </Item>
+                                        </Item>}
                                     </ListItem>
                                 )
                             })}
@@ -532,6 +520,12 @@ const styles = StyleSheet.create({
         flex: 1,
         color: Colors.textForeground,
     },
+    credential2: {
+        width: '100%',
+        padding: Metrics.smallPadding,
+        // flex: 1,
+        color: Colors.textForeground,
+    },
 
     picker: {
         // flex: 1,
@@ -552,6 +546,7 @@ const mapStateToProps = (state: any) => {
         selectedFormColumns: state.reports.selectedFormColumns,
         reports: state.reports.items,
         createReportMode: state.reports.createReportMode,
+        reportProcMode: state.reports.reportProcMode,
     }
 };
 

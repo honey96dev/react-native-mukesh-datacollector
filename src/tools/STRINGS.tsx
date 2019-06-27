@@ -27,6 +27,16 @@ export default {
     newColumnDescription: 'Input new column name and select the type of new column',
     newColumnNameRequired: 'Column name is required!',
 
+    // ======MaintenanceFormMain==========
+    maintenanceMain: 'Maintenance',
+
+    // ======MaintenanceList==========
+    maintenanceList: 'Maintenance',
+
+    // ======CreateMaintenance==========
+    createMaintenance: 'Create Report',
+    editMaintenance: 'Edit Report',
+
     // ======ReportMain==========
     reportMain: 'Reports',
 
@@ -36,6 +46,7 @@ export default {
     // ======CreateReport==========
     createReport: 'Create Report',
     editReport: 'Edit Report',
+    viewReport: 'View Report',
 
     // ======Common==========
     signOut: 'Sign out',

@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormId, setCreateReportMode} from '../../actions/reports';
 
 interface MyProps {
+    reportProcMode: string,
     selectedFormId: any,
     reports: Array<any>,
     listReport: (items: Array<any>) => void,
@@ -151,7 +152,7 @@ class ReportListScreen extends Component<Props> {
     render() {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
-        const {reports, selectedFormId} = self.props;
+        const {reports, selectedFormId, reportProcMode} = self.props;
         let report: any;
         let reportsByForm: Array<any> = [];
         for (report of reports) {
@@ -178,15 +179,15 @@ class ReportListScreen extends Component<Props> {
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.reportList}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == 'rw' ? STRINGS.maintenanceList : STRINGS.reportList}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        <Button
+                        {reportProcMode == 'rw' && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
                             <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="plus"/>
-                        </Button>
+                        </Button>}
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
@@ -204,14 +205,17 @@ class ReportListScreen extends Component<Props> {
                                         {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
                                         </Body>
                                         <Right>
-                                            <Button
+                                            {reportProcMode == 'rw' && <Button
                                                 transparent
                                                 onPress={() => self.onDeleteListItemButtonPressed(value)}
                                             >
                                                 <Icon
                                                     style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
                                                     type={"FontAwesome5"} name="times"/>
-                                            </Button>
+                                            </Button>}
+                                            {reportProcMode == 'r' && <Icon
+                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
+                                                    type={"FontAwesome5"} name="angle-right"/>}
                                         </Right>
                                     </ListItem>
                                 );
@@ -279,6 +283,7 @@ const mapStateToProps = (state: any) => {
     return {
         selectedFormId: state.reports.selectedFormId,
         reports: state.reports.items,
+        reportProcMode: state.reports.reportProcMode,
     }
 };
 

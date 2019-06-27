@@ -4,22 +4,25 @@ import {NavigationScreenProps} from "react-navigation";
 import {Body, Button, Container, Content, Icon, Input, Item, Label, Spinner, Text, View} from 'native-base';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AutoHeightImage from 'react-native-auto-height-image';
+import {connect} from 'react-redux';
 import {Colors, CommonStyles, Fonts, Images, Metrics, Presets} from '../../theme';
 import {G, STRINGS} from '../../tools';
 import {ROUTES} from "../../routes";
 import MyAlert from "../../components/MyAlert";
 import {fetch, api_list, GET, POST, PUT, DELETE} from '../../apis'
+import {setReportProcMode} from "../../actions/reports";
 
 UIManager.setLayoutAnimationEnabledExperimental &&
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
 interface MyProps {
-
+    reportProcMode: string,
+    setReportProcMode: (data: any) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
 
-export default class SignInScreen extends Component<Props> {
+class SignInScreen extends Component<Props> {
     private animatedValue: Animated.Value;
     state = {
         showPassword: false,
@@ -176,11 +179,14 @@ export default class SignInScreen extends Component<Props> {
                 if (response.result == STRINGS.success) {
                     G.UserProfile.data = response.data;
                     if (response.data.role == STRINGS.user1) {
-                        this.props.navigation.navigate(ROUTES.ReportMain);
-                    } else if (response.data.role == STRINGS.user2) {
+                        this.props.setReportProcMode('rw');
                         this.props.navigation.navigate(ROUTES.FormMain);
+                    } else if (response.data.role == STRINGS.user2) {
+                        this.props.setReportProcMode('r');
+                        this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.admin) {
-
+                        this.props.setReportProcMode('rw');
+                        this.props.navigation.navigate(ROUTES.FormMain);
                     }
                 } else {
                     this.setState({
@@ -346,7 +352,7 @@ const styles = StyleSheet.create({
     //     color: Colors.primaryButtonBackground,
     // },
     waveSec: {
-        height: hp(25),
+        height: hp(35),
         // backgroundImage: Images.wave,
         flexDirection: 'column',
         alignItems: 'center',
@@ -425,3 +431,20 @@ const styles = StyleSheet.create({
         paddingRight: 0,
     },
 });
+
+const mapStateToProps = (state: any) => {
+    return {
+        reportProcMode: state.reports.reportProcMode,
+    }
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        setReportProcMode: (data: any) => {
+            dispatch(setReportProcMode(data));
+        },
+    }
+};
+
+// @ts-ignore
+export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);
