@@ -43,7 +43,7 @@ export default class SignUpScreen extends Component<Props> {
         name: '',
         password: '',
         password2: '',
-        role: this.roles[0].value,
+        role: this.roles[1].value,
 
         doingRegister: false,
         didRegister: false,
@@ -246,7 +246,7 @@ export default class SignUpScreen extends Component<Props> {
                             selectedValue={role}
                             placeholder={STRINGS.selectRole}
                             // placeholderStyle={{ color: "#bfc6ea" }}
-                            onValueChange={(value) => self.onKeyValueFieldChanged('language', value)}
+                            onValueChange={(value) => self.onKeyValueFieldChanged('role', value)}
                         >
                             {roles.map((item: any, key) => {
                                 let label = item.label;
