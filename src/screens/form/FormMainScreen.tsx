@@ -1,9 +1,23 @@
 import React, {Component} from "react";
-import {ScrollView, StyleSheet} from 'react-native';
+import {LayoutAnimation, ScrollView, StyleSheet} from 'react-native';
 import {NavigationScreenProps} from "react-navigation";
-import {Body, Button, Container, Content, Header, Icon, Label, Left, List, ListItem, Right, Title} from 'native-base';
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    Header,
+    Icon,
+    Input, Item,
+    Label,
+    Left,
+    List,
+    ListItem,
+    Right,
+    Title
+} from 'native-base';
 // @ts-ignore
-import {Colors, CommonStyles, Metrics, Presets} from '../../theme';
+import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
 import {STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
@@ -36,6 +50,8 @@ class FormMainScreen extends Component<Props> {
         confirmTitle: '',
         confirmMessage: '',
 
+        searchWord: '',
+
         deletingFormId: -1,
     };
 
@@ -66,6 +82,15 @@ class FormMainScreen extends Component<Props> {
             // });
     }
 
+    animateState(nextState: any | Pick<any, never> | null, delay: number = 0) {
+        setTimeout(() => {
+            this.setState(() => {
+                LayoutAnimation.easeInEaseOut();
+                return nextState;
+            });
+        }, delay);
+    }
+
     hideAlert = () => {
         this.setState({
             showAlert: false,
@@ -85,6 +110,21 @@ class FormMainScreen extends Component<Props> {
         this.props.navigation.navigate(ROUTES.CreateForm);
     };
 
+    onKeyValueFieldChanged = (key: any, value:any) => {
+        this.setState({
+            [key]: value,
+        });
+    };
+
+    onKeyValueSlowFieldChanged = (key: any, value:any) => {
+        this.animateState({
+            [key]: value,
+        }, 4000);
+    };
+
+    // onSearchButtonPressed = () => {
+    //
+    // };
 
     onListItemPressed = (value: any) => {
         // let {forms} = this.state;
@@ -154,7 +194,8 @@ class FormMainScreen extends Component<Props> {
 
     render() {
         const self = this;
-        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
+        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
+        const searchWord2 = searchWord.length > 2 ? searchWord : '';
         const {forms} = self.props;
         console.log(forms);
         return (
@@ -183,33 +224,42 @@ class FormMainScreen extends Component<Props> {
                 </Header>
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
+                    <Item regular style={styles.credentialItem}>
+                        <Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'search'}/>
+                        <Input style={[styles.credential, Presets.textFont.regular]} value={searchWord} placeholderTextColor={Colors.placeholder} placeholder={STRINGS.search} onChangeText={(text) => self.onKeyValueFieldChanged('searchWord', text)}/>
+                        {/*<Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'arrow-right'} onPress={}/>*/}
+                    </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
                             {forms.map((value: any) => {
-                                return (
-                                    <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
-                                        {/*<Left style={styles.listItemLeft}>*/}
+                                if (value.name.includes(searchWord2)) {
+                                    return (
+                                        <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
+                                            {/*<Left style={styles.listItemLeft}>*/}
                                             {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
-                                        {/*</Left>*/}
-                                        <Body>
-                                        <Label style={Presets.h5.regular}>Name: {value.name}</Label>
-                                        <Label style={Presets.h6.regular}>Columns Count: {value.columns.length}</Label>
-                                        <Label style={Presets.h6.regular}>Modified Date: {value.lastModifiedDate}</Label>
-                                        {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
-                                        </Body>
-                                        <Right>
-                                            <Button
-                                                transparent
-                                                onPress={() => self.onDeleteListItemButtonPressed(value)}
-                                            >
-                                                <Icon
-                                                    style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
-                                                    type={"FontAwesome5"} name="times"/>
-                                            </Button>
-                                        </Right>
-                                    </ListItem>
-                                );
+                                            {/*</Left>*/}
+                                            <Body>
+                                            <Label style={Presets.h5.regular}>Name: {value.name}</Label>
+                                            <Label style={Presets.h6.regular}>Columns
+                                                Count: {value.columns.length}</Label>
+                                            <Label style={Presets.h6.regular}>Modified
+                                                Date: {value.lastModifiedDate}</Label>
+                                            {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
+                                            </Body>
+                                            <Right>
+                                                <Button
+                                                    transparent
+                                                    onPress={() => self.onDeleteListItemButtonPressed(value)}
+                                                >
+                                                    <Icon
+                                                        style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
+                                                        type={"FontAwesome5"} name="times"/>
+                                                </Button>
+                                            </Right>
+                                        </ListItem>
+                                    );
+                                }
                             })}
                         </List>
                     </ScrollView>
@@ -236,6 +286,30 @@ const styles = StyleSheet.create({
     body: {
         width: '100%',
         height: '100%',
+    },
+    credentialSec: {
+        width: '100%',
+        // marginTop: Metrics.baseDoubleMargin,
+        padding: Metrics.basePadding,
+    },
+    credentialItem: {
+        marginTop: Metrics.baseMargin,
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: Metrics.tinyPadding,
+        paddingRight: Metrics.tinyPadding,
+        // marginBottom: 0,
+        backgroundColor: Colors.textBackground,
+        borderRadius: Metrics.baseDoubleRadius,
+        borderColor: Colors.textBorder,
+    },
+    credentialIcon: {
+        margin: 0,
+        color: Colors.placeholder,
+        fontSize: Fonts.Size.text,
+    },
+    credential: {
+        color: Colors.textForeground,
     },
     scrollSec: {
         width: '100%',

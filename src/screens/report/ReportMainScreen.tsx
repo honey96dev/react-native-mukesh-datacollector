@@ -1,9 +1,23 @@
 import React, {Component} from "react";
 import {Animated, ScrollView, StyleSheet} from 'react-native';
 import {NavigationScreenProps} from "react-navigation";
-import {Body, Button, Container, Content, Header, Icon, Label, Left, List, ListItem, Right, Title} from 'native-base';
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    Header,
+    Icon,
+    Input, Item,
+    Label,
+    Left,
+    List,
+    ListItem,
+    Right,
+    Title
+} from 'native-base';
 // @ts-ignore
-import {Colors, CommonStyles, Metrics, Presets} from '../../theme';
+import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
 import {STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
@@ -39,6 +53,8 @@ class ReportMainScreen extends Component<Props> {
         showConfirm: false,
         confirmTitle: '',
         confirmMessage: '',
+
+        searchWord: '',
 
         deletingFormId: -1,
     };
@@ -80,6 +96,12 @@ class ReportMainScreen extends Component<Props> {
         this.setState({
             showConfirm: false,
         })
+    };
+
+    onKeyValueFieldChanged = (key: any, value:any) => {
+        this.setState({
+            [key]: value,
+        });
     };
 
     onListItemPressed = (value: any) => {
@@ -150,7 +172,10 @@ class ReportMainScreen extends Component<Props> {
 
     render() {
         const self = this;
-        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
+        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
+
+        const searchWord2 = searchWord.length > 2 ? searchWord : '';
+
         const {reports, reportProcMode} = self.props;
         return (
             <Container style={styles.container}>
@@ -172,32 +197,41 @@ class ReportMainScreen extends Component<Props> {
                 </Header>
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
+                    <Item regular style={styles.credentialItem}>
+                        <Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'search'}/>
+                        <Input style={[styles.credential, Presets.textFont.regular]} value={searchWord} placeholderTextColor={Colors.placeholder} placeholder={STRINGS.search} onChangeText={(text) => self.onKeyValueFieldChanged('searchWord', text)}/>
+                        {/*<Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'arrow-right'} onPress={}/>*/}
+                    </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
                             {reports.map((value: any) => {
-                                return (
-                                    <ListItem key={value._id} style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
-                                        {/*<Left style={styles.listItemLeft}>*/}
+                                if (value.name.includes(searchWord2)) {
+                                    return (
+                                        <ListItem key={value._id} style={styles.listItem}
+                                                  onPress={() => self.onListItemPressed(value)}>
+                                            {/*<Left style={styles.listItemLeft}>*/}
                                             {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
-                                        {/*</Left>*/}
-                                        <Body>
-                                        <Label style={Presets.h5.regular}>Form Name: {value.name}</Label>
-                                        <Label style={Presets.h6.regular}>Reports Count: {value.reports.length}</Label>
-                                        {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
-                                        </Body>
-                                        <Right>
-                                            {/*<Button*/}
+                                            {/*</Left>*/}
+                                            <Body>
+                                            <Label style={Presets.h5.regular}>Form Name: {value.name}</Label>
+                                            <Label style={Presets.h6.regular}>Reports
+                                                Count: {value.reports.length}</Label>
+                                            {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
+                                            </Body>
+                                            <Right>
+                                                {/*<Button*/}
                                                 {/*transparent*/}
                                                 {/*onPress={() => self.onDeleteListItemButtonPressed(value)}*/}
-                                            {/*>*/}
+                                                {/*>*/}
                                                 <Icon
                                                     style={[Presets.h4.regular, CommonStyles.headerIcon]}
                                                     type={"FontAwesome5"} name="angle-right"/>
-                                            {/*</Button>*/}
-                                        </Right>
-                                    </ListItem>
-                                );
+                                                {/*</Button>*/}
+                                            </Right>
+                                        </ListItem>
+                                    );
+                                }
                             })}
                         </List>
                     </ScrollView>
@@ -224,6 +258,30 @@ const styles = StyleSheet.create({
     body: {
         width: '100%',
         height: '100%',
+    },
+    credentialSec: {
+        width: '100%',
+        // marginTop: Metrics.baseDoubleMargin,
+        padding: Metrics.basePadding,
+    },
+    credentialItem: {
+        marginTop: Metrics.baseMargin,
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: Metrics.tinyPadding,
+        paddingRight: Metrics.tinyPadding,
+        // marginBottom: 0,
+        backgroundColor: Colors.textBackground,
+        borderRadius: Metrics.baseDoubleRadius,
+        borderColor: Colors.textBorder,
+    },
+    credentialIcon: {
+        margin: 0,
+        color: Colors.placeholder,
+        fontSize: Fonts.Size.text,
+    },
+    credential: {
+        color: Colors.textForeground,
     },
     scrollSec: {
         width: '100%',

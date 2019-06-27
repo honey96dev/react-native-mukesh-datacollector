@@ -72,6 +72,7 @@ export default {
     password2: 'Confirm Password',
     paymentPassword: 'Payment Password',
     registration: 'Registration',
+    search: 'Search',
     usernameRequired: 'Username is required!',
     emailRequired: 'Email is required!',
     emailInvalid: 'Email is invalid!',

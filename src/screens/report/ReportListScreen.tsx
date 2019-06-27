@@ -1,9 +1,23 @@
 import React, {Component} from "react";
 import {ScrollView, StyleSheet} from 'react-native';
 import {NavigationScreenProps} from "react-navigation";
-import {Body, Button, Container, Content, Header, Icon, Label, Left, List, ListItem, Right, Title} from 'native-base';
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    Header,
+    Icon, Input,
+    Item,
+    Label,
+    Left,
+    List,
+    ListItem,
+    Right,
+    Title
+} from 'native-base';
 // @ts-ignore
-import {Colors, CommonStyles, Metrics, Presets} from '../../theme';
+import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
 import {STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
@@ -40,6 +54,8 @@ class ReportListScreen extends Component<Props> {
         confirmTitle: '',
         confirmMessage: '',
 
+        searchWord: '',
+
         deletingReportId: -1,
     };
 
@@ -68,6 +84,12 @@ class ReportListScreen extends Component<Props> {
             mode: 'create',
         });
         this.props.navigation.navigate(ROUTES.CreateReport);
+    };
+
+    onKeyValueFieldChanged = (key: any, value:any) => {
+        this.setState({
+            [key]: value,
+        });
     };
 
 
@@ -151,7 +173,10 @@ class ReportListScreen extends Component<Props> {
 
     render() {
         const self = this;
-        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage} = self.state;
+        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
+
+        const searchWord2 = searchWord.length > 2 ? searchWord : '';
+
         const {reports, selectedFormId, reportProcMode} = self.props;
         let report: any;
         let reportsByForm: Array<any> = [];
@@ -192,33 +217,58 @@ class ReportListScreen extends Component<Props> {
                 </Header>
                 <Content contentContainerStyle={styles.content}>
                     <Body style={styles.body}>
+                    <Item regular style={styles.credentialItem}>
+                        <Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'search'}/>
+                        <Input style={[styles.credential, Presets.textFont.regular]} value={searchWord} placeholderTextColor={Colors.placeholder} placeholder={STRINGS.search} onChangeText={(text) => self.onKeyValueFieldChanged('searchWord', text)}/>
+                        {/*<Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'arrow-right'} onPress={}/>*/}
+                    </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
                             {reportsByForm.map((value: any) => {
-                                return (
-                                    <ListItem key={value._id} style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
-                                        <Body>
-                                        {/*{self.renderListItemBody(value)}*/}
-                                        <Label style={Presets.h5.regular}>{value.byWho}</Label>
-                                        <Label style={Presets.h6.regular}>Modified Date: {value.lastModifiedDate}</Label>
-                                        {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
-                                        {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
-                                        </Body>
-                                        <Right>
-                                            {reportProcMode == 'rw' && <Button
-                                                transparent
-                                                onPress={() => self.onDeleteListItemButtonPressed(value)}
-                                            >
-                                                <Icon
-                                                    style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
-                                                    type={"FontAwesome5"} name="times"/>
-                                            </Button>}
-                                            {reportProcMode == 'r' && <Icon
+                                let valueJoined: any[] = [];
+                                // @ts-ignore
+                                Object.entries(value).forEach((entry: any) => {
+                                    let key = entry[0];
+                                    let value = entry[1];
+                                    if (key.indexOf('_id') == -1) {
+                                        if (value instanceof Date) {
+                                            // @ts-ignore
+                                            valueJoined.push(sprintf("%02d/%02/%04d", value.getMonth() + 1, value.getDate(), value.getFullYear()));
+                                        } else {
+                                            // @ts-ignore
+                                            valueJoined.push(value);
+                                        }
+                                    }
+                                });
+                                const valueJoinedString = valueJoined.join(',');
+                                if (valueJoinedString.includes(searchWord2)) {
+                                    return (
+                                        <ListItem key={value._id} style={styles.listItem}
+                                                  onPress={() => self.onListItemPressed(value)}>
+                                            <Body>
+                                            {/*{self.renderListItemBody(value)}*/}
+                                            <Label style={Presets.h5.regular}>{value.byWho}</Label>
+                                            <Label style={Presets.h6.regular}>Modified
+                                                Date: {value.lastModifiedDate}</Label>
+                                            {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
+                                            {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
+                                            </Body>
+                                            <Right>
+                                                {reportProcMode == 'rw' && <Button
+                                                    transparent
+                                                    onPress={() => self.onDeleteListItemButtonPressed(value)}
+                                                >
+                                                    <Icon
+                                                        style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
+                                                        type={"FontAwesome5"} name="times"/>
+                                                </Button>}
+                                                {reportProcMode == 'r' && <Icon
                                                     style={[Presets.h4.regular, CommonStyles.headerIcon]}
                                                     type={"FontAwesome5"} name="angle-right"/>}
-                                        </Right>
-                                    </ListItem>
-                                );
+                                            </Right>
+                                        </ListItem>
+                                    );
+                                }
                             })}
                         </List>
                     </ScrollView>
@@ -245,6 +295,30 @@ const styles = StyleSheet.create({
     body: {
         width: '100%',
         height: '100%',
+    },
+    credentialSec: {
+        width: '100%',
+        // marginTop: Metrics.baseDoubleMargin,
+        padding: Metrics.basePadding,
+    },
+    credentialItem: {
+        marginTop: Metrics.baseMargin,
+        marginLeft: 0,
+        marginRight: 0,
+        paddingLeft: Metrics.tinyPadding,
+        paddingRight: Metrics.tinyPadding,
+        // marginBottom: 0,
+        backgroundColor: Colors.textBackground,
+        borderRadius: Metrics.baseDoubleRadius,
+        borderColor: Colors.textBorder,
+    },
+    credentialIcon: {
+        margin: 0,
+        color: Colors.placeholder,
+        fontSize: Fonts.Size.text,
+    },
+    credential: {
+        color: Colors.textForeground,
     },
     scrollSec: {
         width: '100%',
