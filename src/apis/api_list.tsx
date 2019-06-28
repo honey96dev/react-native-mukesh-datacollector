@@ -12,4 +12,8 @@ export const api_list = {
     reportEdit: 'reports/edit',
     reportDelete: 'reports/delete',
     reportDeleteByForm: 'reports/deleteByForm',
+    folderList: 'folders/list',
+    folderAdd: 'folders/add',
+    folderEdit: 'folders/edit',
+    folderDelete: 'folders/delete',
 };

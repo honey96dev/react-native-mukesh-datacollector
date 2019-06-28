@@ -11,6 +11,8 @@ import CreateFormScreen from '../screens/form/CreateFormScreen';
 import ReportMainScreen from '../screens/report/ReportMainScreen';
 import ReportListScreen from '../screens/report/ReportListScreen';
 import CreateReportScreen from '../screens/report/CreateReportScreen';
+import FolderMainScreen from '../screens/admin/FolderMainScreen';
+import CreateFolderScreen from '../screens/admin/CreateFolderScreen';
 // import CreateFormScreen from '../screens/report/';
 
 import ROUTES from './ROUTES';
@@ -91,6 +93,22 @@ const MainDrawerStack = createStackNavigator(
         headerMode: "none",
     });
 
+const AdminStack = createStackNavigator(
+    {
+        [ROUTES.FolderMain]: {
+            screen: FolderMainScreen,
+        },
+        [ROUTES.CreateFolder]: {
+            screen: CreateFolderScreen,
+        },
+    },
+    {
+        headerMode: "none",
+        transitionConfig: (nav: any) => fromRight(),
+    });
+
+// const AdminStack = cre
+
 const mainNavigator = createStackNavigator(
     {
         [ROUTES.Splash]: {
@@ -98,6 +116,9 @@ const mainNavigator = createStackNavigator(
         },
         [ROUTES.MainDrawerStack]: {
             screen: MainDrawerStack,
+        },
+        [ROUTES.AdminStack]: {
+            screen: AdminStack,
         },
     }, {
         headerMode: "none",

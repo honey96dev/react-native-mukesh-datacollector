@@ -12,6 +12,10 @@ const ROUTES = {
     ReportMain: "ReportMain",
     ReportList: "ReportList",
     CreateReport: "CreateReport",
+    AdminStack: "AdminStack",
+    FolderStack: "FolderStack",
+    FolderMain: "FolderMain",
+    CreateFolder: "CreateFolder",
     SignOut : "SignIn",
 };
 

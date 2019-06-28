@@ -27,10 +27,10 @@ class SignInScreen extends Component<Props> {
     state = {
         showPassword: false,
 
-        email: '',
-        password: '',
-        // email: 'honey96dev@gmail.com',
-        // password: '123456',
+        // email: '',
+        // password: '',
+        email: 'honey96dev@gmail.com',
+        password: '123456',
 
         showModal: false,
         // resetPasswordEmail: '',
@@ -188,7 +188,8 @@ class SignInScreen extends Component<Props> {
                         this.props.navigation.navigate(ROUTES.ReportMain);
                     } else if (response.data.role == STRINGS.admin) {
                         this.props.setReportProcMode(STRINGS.maintenanceMain);
-                        this.props.navigation.navigate(ROUTES.FormMain);
+                        // this.props.navigation.navigate(ROUTES.FormMain);
+                        this.props.navigation.navigate(ROUTES.FolderMain);
                     }
                 } else {
                     this.setState({

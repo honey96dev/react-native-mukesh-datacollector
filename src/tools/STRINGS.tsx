@@ -48,6 +48,19 @@ export default {
     editReport: 'Edit Report',
     viewReport: 'View Report',
 
+    // ======FolderMain==========
+    folderMain: 'Folders',
+
+    // ======CreateFolder==========
+    createFolder: 'Create Form',
+    editFolder: 'Edit Form',
+    // columns: 'Columns',
+    // newColumn: 'New Column',
+    // editColumn: 'Edit Column',
+    folderNameRequired: 'Form name is required!',
+    // newColumnDescription: 'Input new column name and select the type of new column',
+    // newColumnNameRequired: 'Column name is required!',
+
     // ======Common==========
     signOut: 'Sign out',
     appName: 'DataCollector',
