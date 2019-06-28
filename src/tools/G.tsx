@@ -18,9 +18,9 @@ const isValidEmail = (email: string) => {
 };
 
 export default class G {
-    // static Server: Server = {isDeveloping: true, baseUrl: 'http://192.168.200.16:3000'};
+    static Server: Server = {isDeveloping: true, baseUrl: 'http://192.168.200.16:3000'};
     // static Server: Server = {isDeveloping: false, baseUrl: 'http://139.180.195.22'};
-    static Server: Server = {isDeveloping: false, baseUrl: 'http://10.1.99.247'};
+    // static Server: Server = {isDeveloping: false, baseUrl: 'http://10.1.99.247'};
     static axiosTimeout: number = 15000;
     static UserProfile: UserProfile = {data: {}};
     static isValidEmail = isValidEmail;

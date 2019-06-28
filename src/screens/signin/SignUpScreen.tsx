@@ -161,7 +161,7 @@ export default class SignUpScreen extends Component<Props> {
                 this.setState({
                     showAlert: true,
                     alertTitle: STRINGS.error,
-                    alertMessage: STRINGS.passwordRequired,
+                    alertMessage: STRINGS.unknownServerError,
                 });
             })
             .finally(() => {
