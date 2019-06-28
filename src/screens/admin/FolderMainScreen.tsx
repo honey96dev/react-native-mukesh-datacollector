@@ -104,6 +104,10 @@ class FolderMainScreen extends Component<Props> {
         })
     };
 
+    onSignOutButtonPressed = () => {
+        this.props.navigation.navigate(ROUTES.SignIn);
+    };
+
     onPlusButtonPressed = () => {
         this.props.setCreateFolderMode({
             mode: 'create',
@@ -207,9 +211,10 @@ class FolderMainScreen extends Component<Props> {
                     <Left style={CommonStyles.headerLeft}>
                         <Button
                             transparent
-                            onPress={() => this.props.navigation.openDrawer()}
+                            onPress={self.onSignOutButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="sign-out-alt"/>
+                            <Label>Sign out</Label>
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
