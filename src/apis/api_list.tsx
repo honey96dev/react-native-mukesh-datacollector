@@ -16,4 +16,5 @@ export const api_list = {
     folderAdd: 'folders/add',
     folderEdit: 'folders/edit',
     folderDelete: 'folders/delete',
+    userList: 'folders/userList',
 };

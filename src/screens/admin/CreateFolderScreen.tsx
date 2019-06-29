@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {ScrollView, StyleSheet} from 'react-native';
-import {NavigationScreenProps, StackActions} from "react-navigation";
+import {StyleSheet} from 'react-native';
+import {NavigationScreenProps} from "react-navigation";
 import {
     Body,
     Button,
@@ -10,27 +10,27 @@ import {
     Icon,
     Input,
     Item,
-    Label,
     Left,
-    List,
-    ListItem,
     Right,
-    Title, View, Text, Row, Col, Picker,
+    Tab,
+    TabHeading,
+    Tabs,
+    Text,
+    Title,
 } from 'native-base';
 // @ts-ignore
-import {Colors, CommonStyles, Fonts, Metrics, ModalStyles, Presets} from '../../theme';
+import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
-import {G, NUMBERS, STRINGS} from "../../tools";
+import {G, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
-import Modal from "react-native-modal";
 import MyAlert from "../../components/MyAlert";
-import MyConfirm from "../../components/MyConfirm";
-import {sprintf} from "sprintf-js";
 import {api_list, fetch, GET, POST, PUT} from "../../apis";
 
 import {connect} from 'react-redux';
-import {listFolder, addFolder, deleteFolder, editFolder} from '../../actions/folders';
+import {addFolder, deleteFolder, editFolder, listFolder} from '../../actions/folders';
 import {listReport} from '../../actions/reports';
+import CreateFolderFormsTab from './CreateFolderFormsTab';
+import CreateFolderUsersTab from './CreateFolderUsersTab';
 
 interface MyProps {
     folders: Array<any>,
@@ -61,19 +61,13 @@ class CreateFolderScreen extends Component<Props> {
         alertTitle: '',
         alertMessage: '',
 
-        // showConfirm: false,
-        // confirmTitle: '',
-        // confirmMessage: '',
-
-
         name: '',
-        // columns: [],
-
-        // newItemName: '',
-        // newItemType: '',
-        // newItemValues: '',
-        //
-        // deletingListItemIdx: -1,
+        forms: [],
+        users: [],
+        formArray: [],
+        userArray: [],
+        formChecked: [],
+        userChecked: [],
 
         doingSave: false,
     };
@@ -83,13 +77,61 @@ class CreateFolderScreen extends Component<Props> {
     }
 
     componentDidMount(): void {
+        const self = this;
         if (this.props.createFolderMode.mode == 'edit') {
-            const {name, columns} = this.props.createFolderMode.data;
+            const {name, forms, users} = this.props.createFolderMode.data;
             this.setState({
                 name,
+                forms,
+                users,
                 // columns,
             })
         }
+
+        // @ts-ignore
+        fetch(GET, api_list.formList, {})
+            .then((response: any) => {
+                if (response.result == STRINGS.success) {
+                    // this.props.navigation.navigate(ROUTES.Profile);
+                    this.setState({formArray: response.data});
+                    const {forms, formArray} = self.state;
+
+                    let form1: any;
+                    let form2: any;
+                    for (form1 of formArray) {
+                        form1['checked'] = false;
+                        for (form2 of forms) {
+                            if (form1['_id'] == form2['_id']) {
+                                form1['checked'] = true;
+                                break;
+                            }
+                        }
+                    }
+                    this.setState({formChecked: formArray});
+
+                } else {
+                    this.setState({formArray: []});
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({formArray: []});
+            });
+
+        // @ts-ignore
+        fetch(GET, api_list.userList, {})
+            .then((response: any) => {
+                if (response.result == STRINGS.success) {
+                    // this.props.navigation.navigate(ROUTES.Profile);
+                    this.setState({userArray: response.data});
+                } else {
+                    this.setState({userArray: []});
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({userArray: []});
+            });
     }
     //
     // hideModal = () => {
@@ -207,99 +249,19 @@ class CreateFolderScreen extends Component<Props> {
             [key]: text,
         });
     };
-    //
-    // onAddListItemButtonPressed = () => {
-    //     this.setState({
-    //         newItemName: '',
-    //         newItemType: 'Text',
-    //         newItemValues: '',
-    //         showModal: true,
-    //         modalTitle: STRINGS.newColumn,
-    //         modalMethod: 'add',
-    //     });
-    // };
-    //
-    // onListItemPressed = (value: any) => {
-    //     let {columns} = this.state;
-    //     // @ts-ignore
-    //     const index = columns.indexOf(value);
-    //     console.log(index);
-    //     const {name, type, values} = columns[index];
-    //     this.setState({
-    //         newItemName: name,
-    //         newItemType: type,
-    //         newItemValues: values,
-    //         showModal: true,
-    //         modalTitle: STRINGS.editColumn,
-    //         modalMethod: 'edit',
-    //         deletingListItemIdx: index,
-    //     });
-    // };
-    //
-    // onDeleteListItemButtonPressed = (value: any) => {
-    //     let {columns} = this.state;
-    //     // @ts-ignore
-    //     const index = columns.indexOf(value);
-    //     // console.log(index);
-    //     // @ts-ignore
-    //     const message = sprintf("Column name: %s", value.name);
-    //     this.setState({
-    //         deletingListItemIdx: index,
-    //         showConfirm: true,
-    //         confirmTitle: STRINGS.delete,
-    //         confirmMessage: message,
-    //     });
-    // };
-    //
-    // onAddListItem = () => {
-    //     let {columns, newItemName, newItemType, newItemValues, modalMethod, deletingListItemIdx} = this.state;
-    //     newItemName = newItemName.trim();
-    //     if (newItemName.length == 0) {
-    //         this.setState({
-    //             showAlert: true,
-    //             alertTitle: STRINGS.name,
-    //             alertMessage: STRINGS.newColumnNameRequired,
-    //         });
-    //         return;
-    //     }
-    //     if (modalMethod == 'add') {
-    //         // @ts-ignore
-    //         columns.push({name: newItemName, type: newItemType, values: newItemValues});
-    //         this.setState({
-    //             columns: columns,
-    //             showModal: false,
-    //         });
-    //     } else {
-    //         let {columns} = this.state;
-    //         // @ts-ignore
-    //         columns[deletingListItemIdx].name = newItemName;
-    //         // @ts-ignore
-    //         columns[deletingListItemIdx].type = newItemType;
-    //         // @ts-ignore
-    //         columns[deletingListItemIdx].values = newItemValues;
-    //         this.setState({
-    //             columns: columns,
-    //             showModal: false,
-    //         });
-    //     }
-    // };
-    //
-    // onDeleteListItem = () => {
-    //     let {columns} = this.state;
-    //     columns.splice(this.state.deletingListItemIdx, 1);
-    //     this.setState({
-    //         showConfirm: false,
-    //         columns: columns,
-    //     });
-    // };
+
+    onFormListItemChecked = (index: number, checked: boolean) => {
+        let {formChecked} = this.state;
+        // @ts-ignore
+        formChecked[index]['checked'] = checked;
+        this.setState({formChecked: formChecked});
+    };
 
     render() {
         const mode = this.props.createFolderMode.mode;
         const self = this;
-        const {showAlert, alertTitle, alertMessage, name, doingSave} = self.state;
-        // const {showModal, modalTitle, modalMethod, showAlert, alertTitle, alertMessage, showConfirm, confirmTitle, confirmMessage, name, columns, newItemName, newItemType, newItemValues, doingSave} = self.state;
-        const newItemTypes = self.newItemTypes;
-        let columnIdx = -1;
+        const {showAlert, alertTitle, alertMessage, name, userChecked, formChecked, doingSave} = self.state;
+
         return (
             <Container style={styles.container}>
                 <Header
@@ -334,6 +296,15 @@ class CreateFolderScreen extends Component<Props> {
                                placeholderTextColor={Colors.placeholder} placeholder={STRINGS.name}
                                onChangeText={(text) => self.onKeyValueFieldChanged('name', text)}/>
                     </Item>
+                    <Tabs style={styles.tabs}>
+                        <Tab
+                            heading={ <TabHeading><Icon style={[Presets.h3.regular]} type={"FontAwesome5"} name="clipboard" /><Text>Forms</Text></TabHeading>}>
+                            {CreateFolderFormsTab(formChecked, self.onFormListItemChecked)}
+                        </Tab>
+                        <Tab heading={ <TabHeading><Icon style={[Presets.h3.regular]} type={"FontAwesome"} name="user" /><Text>Users</Text></TabHeading>}>
+                            {CreateFolderUsersTab()}
+                        </Tab>
+                    </Tabs>
                     {/*<Label*/}
                         {/*style={[CommonStyles.title, Presets.titleFont.regular, styles.columnsTitle]}>{STRINGS.columns}</Label>*/}
                     {/*<ScrollView style={styles.scrollSec}>*/}
@@ -374,82 +345,8 @@ class CreateFolderScreen extends Component<Props> {
                     {/*</ScrollView>*/}
                     </Body>
                 </Content>
-                {/*<Modal*/}
-                    {/*style={ModalStyles.modal}*/}
-                    {/*isVisible={showModal}*/}
-                    {/*animationIn={"bounceIn"}*/}
-                    {/*animationInTiming={NUMBERS.modalAnimationTiming3}*/}
-                    {/*animationOut={"bounceOut"}*/}
-                    {/*animationOutTiming={NUMBERS.modalAnimationTiming2}*/}
-                    {/*backdropColor={Colors.mainBackground1}*/}
-                {/*>*/}
-                    {/*<View style={ModalStyles.modalContent}>*/}
-                        {/*<Text style={[Presets.h3.bold, ModalStyles.modalTitle]}>{modalTitle}</Text>*/}
-                        {/*<Text*/}
-                            {/*style={[Presets.textFont.regular, ModalStyles.modalDescription]}>{STRINGS.newColumnDescription}</Text>*/}
-                        {/*<Item regular style={ModalStyles.credentialItem}>*/}
-                            {/*<Icon style={ModalStyles.credentialIcon} type={'FontAwesome'} name={'arrow-right'}/>*/}
-                            {/*<Input style={[ModalStyles.credential, Presets.textFont.regular]} value={newItemName}*/}
-                                   {/*placeholderTextColor={Colors.modalPlaceholder} placeholder={STRINGS.name}*/}
-                                   {/*onChangeText={(text) => self.onKeyValueFieldChanged('newItemName', text)}/>*/}
-                        {/*</Item>*/}
-                        {/*<Item regular style={ModalStyles.credentialItem}>*/}
-                            {/*<Picker*/}
 
-                                {/*mode="dropdown"*/}
-                                {/*// iosHeader="Select Language"*/}
-                                {/*// iosIcon={<Icon type={"FontAwesome5"} name={"caret-down"} style={{ color: Colors.mainForeground, fontSize: 25 }} />}*/}
-                                {/*note={false}*/}
-                                {/*style={[Presets.textFont.regular, styles.picker]}*/}
-                                {/*selectedValue={newItemType}*/}
-                                {/*placeholder={STRINGS.selectRole}*/}
-                                {/*// placeholderStyle={{ color: "#bfc6ea" }}*/}
-                                {/*onValueChange={(value) => self.onKeyValueFieldChanged('newItemType', value)}*/}
-                            {/*>*/}
-                                {/*{newItemTypes.map((item: any, key) => {*/}
-                                    {/*let label = item.label;*/}
-                                    {/*let value = item.value;*/}
-                                    {/*return (*/}
-                                        {/*<Picker.Item key={value} label={label} value={value}/>*/}
-                                    {/*);*/}
-                                {/*})}*/}
-                                {/*/!*<Picker.Item label="User1" value="en" />*!/*/}
-                                {/*/!*<Picker.Item label="Vietnamese" value="vt" />*!/*/}
-                            {/*</Picker>*/}
-                        {/*</Item>*/}
-                        {/*{(newItemType == 'Dropdown' || newItemType == 'Checkbox') &&*/}
-                        {/*<Item regular style={ModalStyles.credentialItem}>*/}
-                            {/*<Input style={[ModalStyles.credential, Presets.textFont.regular]} value={newItemValues}*/}
-                                   {/*placeholderTextColor={Colors.modalPlaceholder} placeholder={STRINGS.values}*/}
-                                   {/*onChangeText={(text) => self.onKeyValueFieldChanged('newItemValues', text)}/>*/}
-                        {/*</Item>}*/}
-                        {/*<View style={ModalStyles.modalButtonsSec}>*/}
-                            {/*<Row>*/}
-                                {/*<Col style={ModalStyles.modalButtonSec}>*/}
-                                    {/*<Button style={[Presets.modalRejectButton, ModalStyles.modalButton]}*/}
-                                            {/*onPress={self.hideModal}>*/}
-                                        {/*<Icon style={[Presets.textFont.regular, ModalStyles.modalButtonIcon]}*/}
-                                              {/*type={'FontAwesome5'} name={'times'}/>*/}
-                                        {/*<Text uppercase={false}*/}
-                                              {/*style={[Presets.textFont.semiBold, ModalStyles.modalButtonText]}>{STRINGS.cancel}</Text>*/}
-                                    {/*</Button>*/}
-                                {/*</Col>*/}
-                                {/*<Col style={ModalStyles.modalButtonSec}>*/}
-                                    {/*<Button style={[Presets.modalAcceptButton, ModalStyles.modalButton]}*/}
-                                            {/*onPress={self.onAddListItem}>*/}
-                                        {/*<Icon style={[Presets.textFont.regular, ModalStyles.modalButtonIcon]}*/}
-                                              {/*type={'FontAwesome5'}*/}
-                                              {/*name={modalMethod == 'add' ? 'plus' : 'edit'}/>*/}
-                                        {/*<Text uppercase={false}*/}
-                                              {/*style={[Presets.textFont.semiBold, ModalStyles.modalButtonText]}>{modalMethod == 'add' ? STRINGS.add : STRINGS.edit}</Text>*/}
-                                    {/*</Button>*/}
-                                {/*</Col>*/}
-                            {/*</Row>*/}
-                        {/*</View>*/}
-                    {/*</View>*/}
-                {/*</Modal>*/}
                 {MyAlert(showAlert, alertTitle, alertMessage, self.hideAlert)}
-                {/*{MyConfirm(showConfirm, confirmTitle, confirmMessage, self.hideConfirm, self.onDeleteListItem)}*/}
             </Container>
         );
     }
@@ -489,39 +386,22 @@ const styles = StyleSheet.create({
     input: {
         color: Colors.textForeground,
     },
-    columnsTitle: {
+
+    tabs: {
         marginTop: Metrics.baseMargin,
-    },
-    scrollSec: {
-        width: '100%',
-        // marginTop: Metrics.baseDoubleMargin,
-        // flexDirection: 'column',
-        // alignItems: "flex-start",
-    },
-    listItem: {
-        marginLeft: 0,
-        marginRight: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-    },
-    listItemDeleteIcon: {
-        marginRight: 0,
-        color: Colors.danger,
-    },
-    listItemAddButton: {
-        marginTop: Metrics.baseMargin,
-        width: '100%',
-        // height: Metrics.section,
-        // flexDirection: "column",
-        justifyContent: "center",
-        borderRadius: Metrics.baseDoubleRadius,
     },
 
-    picker: {
-        // flex: 1,
-        width: '100%',
-        color: Colors.textForeground,
-    },
+    // tabBarContainerStyle: {
+    //     backgroundColor: Colors.mainBackground,
+    // },
+    //
+    // tabBarUnderlineStyle: {
+    //     backgroundColor: Colors.primaryButtonBackground,
+    // },
+    //
+    // tab: {
+    //     backgroundColor: Colors.mainBackground,
+    // }
 });
 
 const mapStateToProps = (state: any) => {
