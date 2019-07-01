@@ -3,12 +3,11 @@ import {ScrollView, StyleSheet, Text} from "react-native";
 import {Body, List, ListItem, Right, Switch} from "native-base";
 import {Colors, Metrics, Presets} from "../../theme";
 
-const formsTab = (forms: any[], onListItemClicked: (index: number, checked: boolean) => void) => {
-    console.log(forms);
+const formsTab = (items: any[], onListItemClicked: (index: number, checked: boolean) => void) => {
     return (
         <ScrollView style={styles.scrollSec}>
             <List style={styles.scrollSec}>
-                {forms.map((value, index) => {
+                {items.map((value, index) => {
                     return (
                         <ListItem style={styles.listItem}>
                             <Body style={styles.listItemBody}>
@@ -16,7 +15,7 @@ const formsTab = (forms: any[], onListItemClicked: (index: number, checked: bool
                             {/*<Text style={Presets.h6.regular}>{value.lastModifiedDate}</Text>*/}
                             </Body>
                             <Right>
-                                <Switch thumbTintColor={Colors.primaryButtonBackground}
+                                <Switch thumbColor={Colors.primaryButtonBackground}
                                         trackColor={{false: Colors.placeholder, true: Colors.secondaryButtonBackground}}
                                         value={value.checked}
                                         onValueChange={(value) => onListItemClicked(index, value)}/>
@@ -39,17 +38,8 @@ const styles = StyleSheet.create({
         paddingLeft: 0,
         paddingRight: 0,
     },
-    listItemLeft: {
-        width: Metrics.doubleSection,
-        flexDirection: 'column',
-        alignItems: 'flex-start'
-    },
     listItemBody: {
         // flex: 1,
-    },
-    listItemDeleteIcon: {
-        marginRight: 0,
-        color: Colors.danger,
     },
 });
 

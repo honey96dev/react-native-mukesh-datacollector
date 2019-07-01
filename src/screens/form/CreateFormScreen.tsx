@@ -31,6 +31,7 @@ import {api_list, fetch, GET, POST, PUT} from "../../apis";
 import {connect} from 'react-redux';
 import {listForm, addForm, deleteForm, editForm} from '../../actions/forms';
 import {listReport} from '../../actions/reports';
+import {listFolder} from "../../actions/folders";
 
 interface MyProps {
     forms: Array<any>,
@@ -40,6 +41,7 @@ interface MyProps {
     deleteForm: (form: any) => void,
     editForm: (form: any) => void,
     listReport: (items: Array<any>) => void,
+    listFolder: (items: Array<any>) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -560,6 +562,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         listReport: (items: any) => {
             dispatch(listReport(items));
+        },
+        listFolder: (folders: any) => {
+            dispatch(listFolder(folders));
         },
     }
 };

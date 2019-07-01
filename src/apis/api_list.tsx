@@ -17,4 +17,6 @@ export const api_list = {
     folderEdit: 'folders/edit',
     folderDelete: 'folders/delete',
     userList: 'folders/userList',
+    user2Folders: 'folders/user2Folders',
+    folder2Forms: 'folders/folder2Forms',
 };

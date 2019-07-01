@@ -16,16 +16,24 @@ const deviceWidth = Dimensions.get("window").width;
 // const drawerImage = require("../../assets/images/logo.png");
 const items = [
     {
+        name: STRINGS.folderMain,
+        route: ROUTES.FolderMain,
+        iconType: "FontAwesome",
+        iconName: "folder-open",
+        bg: "#C5F442",
+        users: [STRINGS.admin],
+    },
+    {
         name: STRINGS.formMain,
         route: ROUTES.FormMain,
-        iconType: "FontAwesome",
-        iconName: "plus-circle",
+        iconType: "FontAwesome5",
+        iconName: "clipboard-list",
         bg: "#C5F442",
         users: [STRINGS.admin],
     },
     {
         name: STRINGS.maintenanceMain,
-        route: ROUTES.ReportMain,
+        route: ROUTES.ReportFolder,
         iconType: "FontAwesome5",
         iconName: "hammer",
         bg: "#C5F442",
@@ -33,7 +41,7 @@ const items = [
     },
     {
         name: STRINGS.reportMain,
-        route: ROUTES.ReportMain,
+        route: ROUTES.ReportFolder,
         iconType: "FontAwesome5",
         iconName: "binoculars",
         bg: "#C5F442",

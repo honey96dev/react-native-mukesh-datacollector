@@ -48,18 +48,25 @@ export default {
     editReport: 'Edit Report',
     viewReport: 'View Report',
 
+    // ======FormFolder==========
+    formFolder: 'Select Folder',
+
     // ======FolderMain==========
     folderMain: 'Folders',
 
     // ======CreateFolder==========
-    createFolder: 'Create Form',
-    editFolder: 'Edit Form',
+    createFolder: 'Create Folder',
+    editFolder: 'Edit Folder',
     // columns: 'Columns',
     // newColumn: 'New Column',
     // editColumn: 'Edit Column',
     folderNameRequired: 'Form name is required!',
     // newColumnDescription: 'Input new column name and select the type of new column',
     // newColumnNameRequired: 'Column name is required!',
+    folderNone: 'None',
+    folderManager: 'Folder Manager',
+    folderUser: 'Folder User',
+
 
     // ======Common==========
     signOut: 'Sign out',

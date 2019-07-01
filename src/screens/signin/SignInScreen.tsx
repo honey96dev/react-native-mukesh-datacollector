@@ -27,10 +27,10 @@ class SignInScreen extends Component<Props> {
     state = {
         showPassword: false,
 
-        // email: '',
-        // password: '',
-        email: 'honey96dev@gmail.com',
-        password: '123456',
+        email: '',
+        password: '',
+        // email: 'honey96dev@gmail.com',
+        // password: '123456',
 
         showModal: false,
         // resetPasswordEmail: '',

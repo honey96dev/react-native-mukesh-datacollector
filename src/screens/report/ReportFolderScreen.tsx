@@ -15,54 +15,32 @@ import {
     List,
     ListItem,
     Right,
-    Title,
-    View
+    Title
 } from 'native-base';
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
-import {STRINGS} from "../../tools";
+import {G, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
 import {api_list, fetch, GET} from "../../apis";
-import MyAlert from "../../components/MyAlert";
 
 import {connect} from 'react-redux';
-import {
-    addReport,
-    deleteReport,
-    deleteReportByForm,
-    editReport,
-    listReport,
-    setCreateReportMode,
-    setReportProcMode,
-    setSelectedFormData
-} from '../../actions/reports';
+import {listManager2Folders, listUser2Folders, setSelectedFolder} from '../../actions/folders';
 
 interface MyProps {
-    selectedFolder: any,
-    reportProcMode: string,
-    reports: Array<any>,
-    listReport: (items: Array<any>) => void,
-    addReport: (item: any) => void,
-    deleteReport: (item: any) => void,
-    deleteReportByForm: (form: any) => void,
-    editReport: (prev: any, current: any) => void,
-    setSelectedFormData: (data: any) => void,
-    setCreateReportMode: (data: any) => void,
-    setReportProcMode: (data: any) => void,
+    reportProcMode: any,
+    manager2Folders: any[],
+    user2Folders: any[],
+    setSelectedFolder: (items: any) => void,
+    listManager2Folders: (items: any[]) => void,
+    listUser2Folders: (items: any[]) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
 
-class ReportMainScreen extends Component<Props> {
+class ReportFolderScreen extends Component<Props> {
     state = {
-        showAlert: false,
-        alertTitle: '',
-        alertMessage: '',
-
         searchWord: '',
-
-        forms: [],
     };
 
     constructor(props: Props) {
@@ -71,46 +49,40 @@ class ReportMainScreen extends Component<Props> {
 
     componentDidMount(): void {
         // @ts-ignore
-        fetch(GET, api_list.reportList, {})
+        fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
             .then((response: any) => {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
                     // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listReport(response.data);
+                    this.props.listUser2Folders(response.data);
                 } else {
-                    this.props.listReport([]);
+                    this.props.listUser2Folders([]);
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.props.listReport([]);
+                this.props.listUser2Folders([]);
             });
-
         // @ts-ignore
-        fetch(GET, api_list.folder2Forms, {folderId: this.props.selectedFolder._id})
+        fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
             .then((response: any) => {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
-                    this.setState({forms: response.data});
+                    // this.props.navigation.navigate(ROUTES.Profile);
+                    this.props.listManager2Folders(response.data);
                 } else {
-                    this.setState({forms: []});
+                    this.props.listManager2Folders([]);
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.setState({forms: []});
+                this.props.listManager2Folders([]);
             });
-            // .finally(() => {
-            //     this.setState({
-            //         doingRegister: false,
-            //     });
-            // });
     }
 
-    hideAlert = () => {
-        this.setState({
-            showAlert: false,
-        })
+    onSignOutButtonPressed = () => {
+        // this.props.navigation.navigate(ROUTES.SignIn);
+        this.props.navigation.openDrawer();
     };
 
     onKeyValueFieldChanged = (key: any, value:any) => {
@@ -120,25 +92,17 @@ class ReportMainScreen extends Component<Props> {
     };
 
     onListItemPressed = (value: any) => {
-        // let {forms} = this.state;
-        // // @ts-ignore
-        // const index = columns.indexOf(value);
-        // console.log(value);
-        this.props.setSelectedFormData({
-            id: value._id,
-            columns: value.columns,
-        });
-        this.props.navigation.navigate(ROUTES.ReportList);
+        this.props.setSelectedFolder(value);
+        this.props.navigation.navigate(ROUTES.ReportMain);
     };
 
     render() {
         const self = this;
-        const {showAlert, alertTitle, alertMessage, searchWord} = self.state;
-
+        const {searchWord} = self.state;
+        const {reportProcMode, manager2Folders, user2Folders} = self.props;
+        const folders = reportProcMode == STRINGS.maintenanceMain ? manager2Folders : user2Folders;
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
-
-        const {reportProcMode} = self.props;
-        const {forms} = self.state;
+        const userRole = G.UserProfile.data.role;
         return (
             <Container style={styles.container}>
                 <Header
@@ -146,15 +110,23 @@ class ReportMainScreen extends Component<Props> {
                     <Left style={CommonStyles.headerLeft}>
                         <Button
                             transparent
-                            onPress={() => this.props.navigation.openDrawer()}
+                            onPress={self.onSignOutButtonPressed}
                         >
                             <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            {/*<Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="sign-out-alt"/>*/}
+                            {/*<Label>Sign out</Label>*/}
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
-                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == STRINGS.maintenanceMain ? STRINGS.maintenanceMain : STRINGS.reportMain}</Title>
+                    <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{STRINGS.formFolder}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
+                        {/*{userRole == STRINGS.admin && <Button*/}
+                            {/*transparent*/}
+                            {/*onPress={self.onPlusButtonPressed}*/}
+                        {/*>*/}
+                            {/*<Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="plus"/>*/}
+                        {/*</Button>}*/}
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
@@ -166,34 +138,19 @@ class ReportMainScreen extends Component<Props> {
                     </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {forms.map((value: any, index: number) => {
+                            {folders.map((value: any, index: number) => {
                                 if (value.name.includes(searchWord2)) {
                                     return (
-                                        <ListItem style={styles.listItem}
-                                                  onPress={() => self.onListItemPressed(value)}>
+                                        <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
                                             {/*<Left style={styles.listItemLeft}>*/}
                                             {/*<Label style={Presets.h5.regular}>Name:</Label>*/}
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
                                             {/*</Left>*/}
                                             <Body>
                                             <Label style={Presets.h5.regular}>{index + 1}. {value.name}</Label>
-                                            {/*<Label style={Presets.h6.regular}>Reports*/}
-                                                {/*Count: {value.reports.length}</Label>*/}
-                                            {/*<Label style={Presets.h6.regular}>{columnIdx}</Label>*/}
+                                            {/*<Label style={Presets.h6.regular}>Modified*/}
+                                                {/*Date: {value.lastModifiedDate}</Label>*/}
                                             </Body>
-                                            <Right>
-                                                {/*<Button*/}
-                                                {/*transparent*/}
-                                                {/*onPress={() => self.onDeleteListItemButtonPressed(value)}*/}
-                                                {/*>*/}
-                                                <View style={styles.listItemRight}>
-                                                    {/*<Label style={Presets.h6.regular}>#{value.reports.length}</Label>*/}
-                                                    <Icon
-                                                        style={[Presets.h4.regular, CommonStyles.headerIcon, styles.listItemIcon]}
-                                                        type={"FontAwesome5"} name="angle-right"/>
-                                                </View>
-                                                {/*</Button>*/}
-                                            </Right>
                                         </ListItem>
                                     );
                                 }
@@ -202,8 +159,6 @@ class ReportMainScreen extends Component<Props> {
                     </ScrollView>
                     </Body>
                 </Content>
-                {MyAlert(showAlert, alertTitle, alertMessage, self.hideAlert)}
-                {/*{MyConfirm(showConfirm, confirmTitle, confirmMessage, self.hideConfirm, self.onDeleteForm)}*/}
             </Container>
         );
     }
@@ -265,66 +220,30 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start'
     },
-    listItemRight: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    listItemDeleteIcon: {
-        marginRight: 0,
-        color: Colors.danger,
-    },
-    listItemIcon: {
-        marginLeft: Metrics.baseMargin,
-        marginRight: 0,
-    },
-    listItemAddButton: {
-        marginTop: Metrics.baseMargin,
-        width: '100%',
-        // height: Metrics.section,
-        // flexDirection: "column",
-        justifyContent: "center",
-        borderRadius: Metrics.baseDoubleRadius,
-    },
-
 });
 
 const mapStateToProps = (state: any) => {
-    // console.log(state);
+    // console.log('manager2Folders', state.folders);
     return {
-        selectedFolder: state.folders.selectedFolder,
-        reports: state.reports.items,
         reportProcMode: state.reports.reportProcMode,
+        manager2Folders: state.folders.manager2Folders,
+        user2Folders: state.folders.user2Folders,
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        listReport: (forms: any) => {
-            dispatch(listReport(forms));
+        setSelectedFolder: (item: any) => {
+            dispatch(setSelectedFolder(item));
         },
-        addReport: (form: any) => {
-            dispatch(addReport(form));
+        listUser2Folders: (items: any[]) => {
+            dispatch(listUser2Folders(items));
         },
-        deleteReport: (form: any) => {
-            dispatch(deleteReport(form));
-        },
-        deleteReportByForm: (form: any) => {
-            dispatch(deleteReportByForm(form));
-        },
-        editReport: (prev: any, current: any) => {
-            dispatch(editReport(prev, current));
-        },
-        setSelectedFormData: (data: any) => {
-            dispatch(setSelectedFormData(data));
-        },
-        setCreateReportMode: (data: any) => {
-            dispatch(setCreateReportMode(data));
-        },
-        setReportProcMode: (data: any) => {
-            dispatch(setReportProcMode(data));
+        listManager2Folders: (items: any[]) => {
+            dispatch(listManager2Folders(items));
         },
     }
 };
 
 // @ts-ignore
-export default connect(mapStateToProps, mapDispatchToProps)(ReportMainScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportFolderScreen);

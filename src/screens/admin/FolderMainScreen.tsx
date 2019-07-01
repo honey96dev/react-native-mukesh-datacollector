@@ -105,7 +105,8 @@ class FolderMainScreen extends Component<Props> {
     };
 
     onSignOutButtonPressed = () => {
-        this.props.navigation.navigate(ROUTES.SignIn);
+        // this.props.navigation.navigate(ROUTES.SignIn);
+        this.props.navigation.openDrawer();
     };
 
     onPlusButtonPressed = () => {
@@ -203,7 +204,7 @@ class FolderMainScreen extends Component<Props> {
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
         const {folders, reportProcMode} = self.props;
         const userRole = G.UserProfile.data.role;
-        console.log(folders);
+        // console.log(folders);
         return (
             <Container style={styles.container}>
                 <Header
@@ -213,8 +214,9 @@ class FolderMainScreen extends Component<Props> {
                             transparent
                             onPress={self.onSignOutButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="sign-out-alt"/>
-                            <Label>Sign out</Label>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            {/*<Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="sign-out-alt"/>*/}
+                            {/*<Label>Sign out</Label>*/}
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>

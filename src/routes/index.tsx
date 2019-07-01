@@ -6,8 +6,10 @@ import {fadeIn, fromLeft, fromRight, zoomIn, zoomOut} from 'react-navigation-tra
 import SignInScreen from '../screens/signin/SignInScreen';
 import SignUpScreen from '../screens/signin/SignUpScreen';
 import DrawerScreen from "./DrawerScreen";
+import FormFolderScreen from '../screens/form/FormFolderScreen';
 import FormMainScreen from '../screens/form/FormMainScreen';
 import CreateFormScreen from '../screens/form/CreateFormScreen';
+import ReportFolderScreen from '../screens/report/ReportFolderScreen';
 import ReportMainScreen from '../screens/report/ReportMainScreen';
 import ReportListScreen from '../screens/report/ReportListScreen';
 import CreateReportScreen from '../screens/report/CreateReportScreen';
@@ -37,6 +39,9 @@ const SplashStack = createStackNavigator(
 
 const FormStack = createStackNavigator(
     {
+        [ROUTES.FormFolder]: {
+            screen: FormFolderScreen,
+        },
         [ROUTES.FormMain]: {
             screen: FormMainScreen,
         },
@@ -51,6 +56,9 @@ const FormStack = createStackNavigator(
 
 const ReportStack = createStackNavigator(
     {
+        [ROUTES.ReportFolder]: {
+            screen: ReportFolderScreen,
+        },
         [ROUTES.ReportMain]: {
             screen: ReportMainScreen,
         },
@@ -66,8 +74,25 @@ const ReportStack = createStackNavigator(
         transitionConfig: (nav: any) => fromRight(),
     });
 
+const AdminStack = createStackNavigator(
+    {
+        [ROUTES.FolderMain]: {
+            screen: FolderMainScreen,
+        },
+        [ROUTES.CreateFolder]: {
+            screen: CreateFolderScreen,
+        },
+    },
+    {
+        headerMode: "none",
+        transitionConfig: (nav: any) => fromRight(),
+    });
+
 const MainDrawer = createDrawerNavigator(
     {
+        [ROUTES.AdminStack]: {
+            screen: AdminStack,
+        },
         [ROUTES.FormStack]: {
             screen: FormStack,
         },
@@ -93,20 +118,6 @@ const MainDrawerStack = createStackNavigator(
         headerMode: "none",
     });
 
-const AdminStack = createStackNavigator(
-    {
-        [ROUTES.FolderMain]: {
-            screen: FolderMainScreen,
-        },
-        [ROUTES.CreateFolder]: {
-            screen: CreateFolderScreen,
-        },
-    },
-    {
-        headerMode: "none",
-        transitionConfig: (nav: any) => fromRight(),
-    });
-
 // const AdminStack = cre
 
 const mainNavigator = createStackNavigator(
@@ -117,9 +128,9 @@ const mainNavigator = createStackNavigator(
         [ROUTES.MainDrawerStack]: {
             screen: MainDrawerStack,
         },
-        [ROUTES.AdminStack]: {
-            screen: AdminStack,
-        },
+        // [ROUTES.AdminStack]: {
+        //     screen: AdminStack,
+        // },
     }, {
         headerMode: "none",
         transitionConfig: () => fadeIn(500),

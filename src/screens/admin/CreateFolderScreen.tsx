@@ -27,7 +27,7 @@ import MyAlert from "../../components/MyAlert";
 import {api_list, fetch, GET, POST, PUT} from "../../apis";
 
 import {connect} from 'react-redux';
-import {addFolder, deleteFolder, editFolder, listFolder} from '../../actions/folders';
+import {addFolder, deleteFolder, editFolder, listFolder, listManager2Folders, listUser2Folders} from '../../actions/folders';
 import {listReport} from '../../actions/reports';
 import CreateFolderFormsTab from './CreateFolderFormsTab';
 import CreateFolderUsersTab from './CreateFolderUsersTab';
@@ -40,6 +40,8 @@ interface MyProps {
     deleteFolder: (folder: any) => void,
     editFolder: (folder: any) => void,
     listReport: (items: Array<any>) => void,
+    listManager2Folders: (items: Array<any>) => void,
+    listUser2Folders: (items: Array<any>) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -92,9 +94,8 @@ class CreateFolderScreen extends Component<Props> {
         fetch(GET, api_list.formList, {})
             .then((response: any) => {
                 if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.setState({formArray: response.data});
-                    const {forms, formArray} = self.state;
+                    const formArray = response.data;
+                    const {forms} = self.state;
 
                     let form1: any;
                     let form2: any;
@@ -102,20 +103,19 @@ class CreateFolderScreen extends Component<Props> {
                         form1['checked'] = false;
                         for (form2 of forms) {
                             if (form1['_id'] == form2['_id']) {
-                                form1['checked'] = true;
+                                form1['checked'] = form2['formUse'];
                                 break;
                             }
                         }
                     }
-                    this.setState({formChecked: formArray});
-
+                    this.setState({formArray: response.data, formChecked: formArray});
                 } else {
-                    this.setState({formArray: []});
+                    this.setState({formArray: [], formChecked: []});
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.setState({formArray: []});
+                this.setState({formArray: [], formChecked: []});
             });
 
         // @ts-ignore
@@ -124,13 +124,30 @@ class CreateFolderScreen extends Component<Props> {
                 if (response.result == STRINGS.success) {
                     // this.props.navigation.navigate(ROUTES.Profile);
                     this.setState({userArray: response.data});
+
+
+                    const userArray = response.data;
+                    const {users} = self.state;
+
+                    let user1: any;
+                    let user2: any;
+                    for (user1 of userArray) {
+                        user1['role'] = 'None';
+                        for (user2 of users) {
+                            if (user1['_id'] == user2['_id']) {
+                                user1['role'] = user2['role'];
+                                break;
+                            }
+                        }
+                    }
+                    this.setState({userArray: response.data, userChecked: userArray});
                 } else {
-                    this.setState({userArray: []});
+                    this.setState({userArray: [], userChecked: []});
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.setState({userArray: []});
+                this.setState({userArray: [], userChecked: []});
             });
     }
     //
@@ -157,7 +174,7 @@ class CreateFolderScreen extends Component<Props> {
     };
 
     onSaveButtonPressed = () => {
-        let {name} = this.state;
+        let {name, formChecked, userChecked} = this.state;
         // let {name, columns} = this.state;
         const userId = G.UserProfile.data._id;
         name = name.trim();
@@ -178,7 +195,8 @@ class CreateFolderScreen extends Component<Props> {
             params = {
                 _id: this.props.createFolderMode.data._id,
                 name,
-                // columns,
+                forms: formChecked,
+                users: userChecked,
             };
         } else {
             method = POST;
@@ -186,10 +204,11 @@ class CreateFolderScreen extends Component<Props> {
             params = {
                 userId,
                 name,
-                // columns,
+                forms: formChecked,
+                users: userChecked,
             };
         }
-        console.log(params);
+        // console.log(params);
         // @ts-ignore
         fetch(method, url, params)
             .then((response: any) => {
@@ -211,7 +230,7 @@ class CreateFolderScreen extends Component<Props> {
                 // @ts-ignore
                 fetch(GET, api_list.folderList, {})
                     .then((response: any) => {
-                        console.log(response);
+                        // console.log(response);
                         if (response.result == STRINGS.success) {
                             // this.props.navigation.navigate(ROUTES.Profile);
                             this.props.listFolder(response.data);
@@ -226,21 +245,53 @@ class CreateFolderScreen extends Component<Props> {
                     // .finally(() => {
                         // this.props.navigation.navigate(ROUTES.FolderMain);
                     // });
-            });
-        // @ts-ignore
-        fetch(GET, api_list.reportList, {})
-            .then((response: any) => {
-                // console.log(response);
-                if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listReport(response.data);
-                } else {
-                    this.props.listReport([]);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.listReport([]);
+
+                // @ts-ignore
+                fetch(GET, api_list.reportList, {})
+                    .then((response: any) => {
+                        // console.log(response);
+                        if (response.result == STRINGS.success) {
+                            // this.props.navigation.navigate(ROUTES.Profile);
+                            this.props.listReport(response.data);
+                        } else {
+                            this.props.listReport([]);
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.props.listReport([]);
+                    });
+                // @ts-ignore
+                fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
+                    .then((response: any) => {
+                        // console.log(response);
+                        if (response.result == STRINGS.success) {
+                            // this.props.navigation.navigate(ROUTES.Profile);
+                            this.props.listManager2Folders(response.data);
+                        } else {
+                            this.props.listManager2Folders([]);
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.props.listManager2Folders([]);
+                    });
+                // @ts-ignore
+                fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
+                    .then((response: any) => {
+                        // console.log(response);
+                        if (response.result == STRINGS.success) {
+                            // this.props.navigation.navigate(ROUTES.Profile);
+                            this.props.listUser2Folders(response.data);
+                        } else {
+                            this.props.listUser2Folders([]);
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.props.listUser2Folders([]);
+                    });
+
             });
     };
 
@@ -255,6 +306,13 @@ class CreateFolderScreen extends Component<Props> {
         // @ts-ignore
         formChecked[index]['checked'] = checked;
         this.setState({formChecked: formChecked});
+    };
+
+    onUserListItemChanged = (index: number, role: string) => {
+        let {userChecked} = this.state;
+        // @ts-ignore
+        userChecked[index]['role'] = role;
+        this.setState({userChecked: userChecked});
     };
 
     render() {
@@ -298,11 +356,11 @@ class CreateFolderScreen extends Component<Props> {
                     </Item>
                     <Tabs style={styles.tabs}>
                         <Tab
-                            heading={ <TabHeading><Icon style={[Presets.h3.regular]} type={"FontAwesome5"} name="clipboard" /><Text>Forms</Text></TabHeading>}>
+                            heading={ <TabHeading><Icon style={[Presets.h3.regular]} type={"FontAwesome5"} name="clipboard-list" /><Text>Forms</Text></TabHeading>}>
                             {CreateFolderFormsTab(formChecked, self.onFormListItemChecked)}
                         </Tab>
                         <Tab heading={ <TabHeading><Icon style={[Presets.h3.regular]} type={"FontAwesome"} name="user" /><Text>Users</Text></TabHeading>}>
-                            {CreateFolderUsersTab()}
+                            {CreateFolderUsersTab(userChecked, self.onUserListItemChanged)}
                         </Tab>
                     </Tabs>
                     {/*<Label*/}
@@ -427,6 +485,12 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         listReport: (items: any) => {
             dispatch(listReport(items));
+        },
+        listManager2Folders: (items: any[]) => {
+            dispatch(listManager2Folders(items));
+        },
+        listUser2Folders: (items: any[]) => {
+            dispatch(listUser2Folders(items));
         },
     }
 };

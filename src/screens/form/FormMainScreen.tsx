@@ -104,6 +104,10 @@ class FormMainScreen extends Component<Props> {
         })
     };
 
+    onBackButtonPressed = () => {
+        this.props.navigation.openDrawer();
+    };
+
     onPlusButtonPressed = () => {
         this.props.setCreateFormMode({
             mode: 'create',
@@ -207,9 +211,10 @@ class FormMainScreen extends Component<Props> {
                     <Left style={CommonStyles.headerLeft}>
                         <Button
                             transparent
-                            onPress={() => this.props.navigation.openDrawer()}
+                            onPress={self.onBackButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"}
+                                  name="angle-left"/>
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
@@ -233,7 +238,7 @@ class FormMainScreen extends Component<Props> {
                     </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {forms.map((value: any) => {
+                            {forms.map((value: any, index: number) => {
                                 if (value.name.includes(searchWord2)) {
                                     return (
                                         <ListItem style={styles.listItem} onPress={() => self.onListItemPressed(value)}>
@@ -242,7 +247,7 @@ class FormMainScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>Columns Count:</Label>*/}
                                             {/*</Left>*/}
                                             <Body>
-                                            <Label style={Presets.h5.regular}>{value.autoIndex}. {value.name}</Label>
+                                            <Label style={Presets.h5.regular}>{index + 1}. {value.name}</Label>
                                             {/*<Label style={Presets.h6.regular}>Columns*/}
                                                 {/*Count: {value.columns.length}</Label>*/}
                                             <Label style={Presets.h6.regular}>Modified
