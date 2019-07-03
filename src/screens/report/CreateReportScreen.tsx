@@ -253,7 +253,7 @@ class CreateReportScreen extends Component<Props> {
             } else {
                 headerTitle = STRINGS.createReport;
             }
-        } else if (reportProcMode == 'r') {
+        } else if (reportProcMode == STRINGS.reportMain) {
             headerTitle = STRINGS.viewReport;
         }
         return (

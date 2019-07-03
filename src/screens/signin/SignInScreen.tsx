@@ -29,6 +29,7 @@ class SignInScreen extends Component<Props> {
 
         email: '',
         password: '',
+        // email: 'honeyocs803@outlook.com',
         // email: 'honey96dev@gmail.com',
         // password: '123456',
 
@@ -182,10 +183,10 @@ class SignInScreen extends Component<Props> {
                     G.UserProfile.data = response.data;
                     if (response.data.role == STRINGS.user1) {
                         this.props.setReportProcMode(STRINGS.maintenanceMain);
-                        this.props.navigation.navigate(ROUTES.ReportMain);
+                        this.props.navigation.navigate(ROUTES.ReportFolder);
                     } else if (response.data.role == STRINGS.user2) {
                         this.props.setReportProcMode(STRINGS.maintenanceMain);
-                        this.props.navigation.navigate(ROUTES.ReportMain);
+                        this.props.navigation.navigate(ROUTES.ReportFolder);
                     } else if (response.data.role == STRINGS.admin) {
                         this.props.setReportProcMode(STRINGS.maintenanceMain);
                         // this.props.navigation.navigate(ROUTES.FormMain);

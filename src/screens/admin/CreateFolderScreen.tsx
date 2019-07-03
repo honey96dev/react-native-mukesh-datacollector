@@ -132,6 +132,7 @@ class CreateFolderScreen extends Component<Props> {
                     let user1: any;
                     let user2: any;
                     for (user1 of userArray) {
+                        user1['userRole'] = user1['role'];
                         user1['role'] = 'None';
                         for (user2 of users) {
                             if (user1['_id'] == user2['_id']) {
@@ -261,37 +262,55 @@ class CreateFolderScreen extends Component<Props> {
                         console.log(err);
                         this.props.listReport([]);
                     });
-                // @ts-ignore
-                fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
-                    .then((response: any) => {
-                        // console.log(response);
-                        if (response.result == STRINGS.success) {
-                            // this.props.navigation.navigate(ROUTES.Profile);
-                            this.props.listManager2Folders(response.data);
-                        } else {
-                            this.props.listManager2Folders([]);
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        this.props.listManager2Folders([]);
-                    });
-                // @ts-ignore
-                fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
-                    .then((response: any) => {
-                        // console.log(response);
-                        if (response.result == STRINGS.success) {
-                            // this.props.navigation.navigate(ROUTES.Profile);
-                            this.props.listUser2Folders(response.data);
-                        } else {
-                            this.props.listUser2Folders([]);
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        this.props.listUser2Folders([]);
-                    });
 
+                if (G.UserProfile.data.role == STRINGS.admin) {
+                    // @ts-ignore
+                    fetch(GET, api_list.folderList, {})
+                        .then((response: any) => {
+                            // console.log(response);
+                            if (response.result == STRINGS.success) {
+                                // this.props.navigation.navigate(ROUTES.Profile);
+                                this.props.listManager2Folders(response.data);
+                            } else {
+                                this.props.listManager2Folders([]);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.props.listManager2Folders([]);
+                        });
+                } else {
+                    // @ts-ignore
+                    fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
+                        .then((response: any) => {
+                            // console.log(response);
+                            if (response.result == STRINGS.success) {
+                                // this.props.navigation.navigate(ROUTES.Profile);
+                                this.props.listManager2Folders(response.data);
+                            } else {
+                                this.props.listManager2Folders([]);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.props.listManager2Folders([]);
+                        });
+                    // @ts-ignore
+                    fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
+                        .then((response: any) => {
+                            // console.log(response);
+                            if (response.result == STRINGS.success) {
+                                // this.props.navigation.navigate(ROUTES.Profile);
+                                this.props.listUser2Folders(response.data);
+                            } else {
+                                this.props.listUser2Folders([]);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.props.listUser2Folders([]);
+                        });
+                }
             });
     };
 
@@ -319,7 +338,7 @@ class CreateFolderScreen extends Component<Props> {
         const mode = this.props.createFolderMode.mode;
         const self = this;
         const {showAlert, alertTitle, alertMessage, name, userChecked, formChecked, doingSave} = self.state;
-
+        console.log(userChecked);
         return (
             <Container style={styles.container}>
                 <Header

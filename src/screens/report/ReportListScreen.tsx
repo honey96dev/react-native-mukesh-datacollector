@@ -14,7 +14,7 @@ import {
     List,
     ListItem,
     Right,
-    Title
+    Title, View, Text
 } from 'native-base';
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
@@ -31,6 +31,7 @@ import {listReport, addReport, deleteReport, deleteReportByForm, editReport, set
 
 interface MyProps {
     reportProcMode: string,
+    selectedFolder: any,
     selectedFormId: any,
     reports: Array<any>,
     listReport: (items: Array<any>) => void,
@@ -94,12 +95,12 @@ class ReportListScreen extends Component<Props> {
 
 
     onListItemPressed = (value: any) => {
-        // let {forms} = this.state;
-        // // @ts-ignore
-        // const index = columns.indexOf(value);
-        // console.log(index);
-        const userRole = G.UserProfile.data.role;
-        if (userRole == STRINGS.user2 && this.props.reportProcMode == STRINGS.maintenanceMain)  {
+        const {selectedFolder} = this.props;
+        const folderRole = selectedFolder.userRole;
+        // const userRole = G.UserProfile.data.role;
+        // console.log(selectedFolder);
+        // if (userRole == STRINGS.user2 && this.props.reportProcMode == STRINGS.maintenanceMain)  {
+        if (folderRole == STRINGS.folderUser)  {
             return;
         }
         this.props.setCreateReportMode({
@@ -179,9 +180,10 @@ class ReportListScreen extends Component<Props> {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
 
-        const searchWord2 = searchWord.length > 2 ? searchWord : '';
+        const searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [''];
 
-        const {reports, selectedFormId, reportProcMode} = self.props;
+        const {reports, selectedFormId, reportProcMode, selectedFolder} = self.props;
+        const folderRole = selectedFolder.userRole;
         const userRole = G.UserProfile.data.role;
         let report: any;
         let reportsByForm: Array<any> = [];
@@ -194,7 +196,6 @@ class ReportListScreen extends Component<Props> {
             }
         }
 
-        console.log('reportProcMode',  reportProcMode);
         return (
             <Container style={styles.container}>
                 <Header
@@ -229,7 +230,7 @@ class ReportListScreen extends Component<Props> {
                     </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {reportsByForm.map((value: any) => {
+                            {reportsByForm.map((value: any, index: number) => {
                                 let valueJoined: any[] = [];
                                 // @ts-ignore
                                 Object.entries(value).forEach((entry: any) => {
@@ -246,36 +247,46 @@ class ReportListScreen extends Component<Props> {
                                     }
                                 });
                                 const valueJoinedString = valueJoined.join(',');
-                                if (valueJoinedString.includes(searchWord2)) {
-                                    return (
-                                        <ListItem key={value._id} style={styles.listItem}
-                                                  onPress={() => self.onListItemPressed(value)}>
-                                            <Body>
-                                            {/*{self.renderListItemBody(value)}*/}
-                                            <Label style={Presets.h5.regular}>{value.byWho}</Label>
-                                            <Label style={Presets.h6.regular}>Modified
-                                                Date: {value.lastModifiedDate}</Label>
-                                            {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
-                                            {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
-                                            </Body>
-                                            <Right>
-                                                {(userRole == STRINGS.admin && reportProcMode == STRINGS.maintenanceMain) && <Button
-                                                    transparent
-                                                    onPress={() => self.onDeleteListItemButtonPressed(value)}
-                                                >
-                                                    <Icon
-                                                        style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
-                                                        type={"FontAwesome5"} name="times"/>
-                                                </Button>}
-                                                {(userRole == STRINGS.user2 && reportProcMode == STRINGS.reportMain) && <Icon
-                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
-                                                    type={"FontAwesome5"} name="angle-right"/>}
-                                                {(userRole == STRINGS.user1) && <Icon
-                                                    style={[Presets.h4.regular, CommonStyles.headerIcon]}
-                                                    type={"FontAwesome5"} name="angle-right"/>}
-                                            </Right>
-                                        </ListItem>
-                                    );
+                                // console.log(valueJoinedString, searchWord2);
+                                for (let word of searchWord2) {
+                                    if (valueJoinedString.includes(word)) {
+                                        return (
+                                            <ListItem key={value._id} style={styles.listItem}
+                                                      onPress={() => self.onListItemPressed(value)}>
+                                                <Body style={styles.listItemBody}>
+                                                {/*{self.renderListItemBody(value)}*/}
+                                                <Label style={Presets.h5.regular}>{index + 1}. </Label>
+                                                <View>
+                                                    <Label style={Presets.h5.regular}>{value.byWho}</Label>
+                                                    <Label style={Presets.h6.regular}>Modified
+                                                        Date: {value.lastModifiedDate}</Label>
+                                                </View>
+                                                {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
+                                                {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
+                                                </Body>
+                                                <Right>
+                                                    {/*{(userRole == STRINGS.admin && reportProcMode == STRINGS.maintenanceMain) && <Button*/}
+                                                    {(folderRole == STRINGS.folderManager && reportProcMode == STRINGS.maintenanceMain) && <Button
+                                                        transparent
+                                                        onPress={() => self.onDeleteListItemButtonPressed(value)}
+                                                    >
+                                                        <Icon
+                                                            style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
+                                                            type={"FontAwesome5"} name="times"/>
+                                                    </Button>}
+                                                    {/*{(userRole == STRINGS.user2 && reportProcMode == STRINGS.reportMain) && <Icon*/}
+                                                    {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
+                                                    {/*type={"FontAwesome5"} name="angle-right"/>}*/}
+                                                    {/*{(userRole == STRINGS.user1) && <Icon*/}
+                                                    {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
+                                                    {/*type={"FontAwesome5"} name="angle-right"/>}*/}
+                                                    {(folderRole == STRINGS.folderUser) && <Icon
+                                                        style={[Presets.h4.regular, CommonStyles.headerIcon]}
+                                                        type={"FontAwesome5"} name="angle-right"/>}
+                                                </Right>
+                                            </ListItem>
+                                        );
+                                    }
                                 }
                             })}
                         </List>
@@ -345,6 +356,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start'
     },
+    listItemBody: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     listItemDeleteIcon: {
         marginRight: 0,
         color: Colors.danger,
@@ -366,6 +381,7 @@ const mapStateToProps = (state: any) => {
         selectedFormId: state.reports.selectedFormId,
         reports: state.reports.items,
         reportProcMode: state.reports.reportProcMode,
+        selectedFolder: state.folders.selectedFolder,
     }
 };
 

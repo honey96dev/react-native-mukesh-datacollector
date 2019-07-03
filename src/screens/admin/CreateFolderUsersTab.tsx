@@ -10,35 +10,40 @@ const usersTab = (items: any[], onListItemPickerClicked: (index: number, role: s
         <ScrollView style={styles.scrollSec}>
             <List style={styles.scrollSec}>
                 {items.map((value, index) => {
-                    return (
-                        <ListItem style={styles.listItem}>
-                            <Body style={styles.listItemBody}>
-                            <Text style={Presets.h4.regular}>{index + 1}. </Text>
-                            <View style={styles.userInfoSec}>
-                                <Text style={Presets.h5.regular}>{value.name}</Text>
-                                <Text style={Presets.h6.regular}>{value.email}</Text>
-                            </View>
-                            </Body>
-                            <Right style={styles.listItemRight}>
-                                <Picker
-                                    mode="dropdown"
-                                    note={false}
-                                    style={[Presets.textFont.regular, styles.rolePicker]}
-                                    selectedValue={value.role}
-                                    placeholder={STRINGS.selectRole}
-                                    onValueChange={(value) => onListItemPickerClicked(index, value)}>
+                    if (value.userRole != STRINGS.admin) {
+                        return (
+                            <ListItem style={styles.listItem}>
+                                <Body style={styles.listItemBody}>
+                                <Text style={Presets.h4.regular}>{index + 1}. </Text>
+                                <View style={styles.userInfoSec}>
+                                    <Text style={Presets.h5.regular}>{value.name}</Text>
+                                    <Text style={Presets.h6.regular}>{value.email}</Text>
+                                </View>
+                                </Body>
+                                <Right style={styles.listItemRight}>
+                                    <Picker
+                                        mode="dropdown"
+                                        note={false}
+                                        style={[Presets.textFont.regular, styles.rolePicker]}
+                                        selectedValue={value.role}
+                                        placeholder={STRINGS.selectRole}
+                                        onValueChange={(value) => onListItemPickerClicked(index, value)}>
 
-                                    <Picker.Item key={STRINGS.folderNone} label={STRINGS.folderNone} value={STRINGS.folderNone}/>
-                                    <Picker.Item key={STRINGS.folderUser} label={STRINGS.folderUser} value={STRINGS.folderUser}/>
-                                    <Picker.Item key={STRINGS.folderManager} label={STRINGS.folderManager} value={STRINGS.folderManager}/>
-                                </Picker>
-                                {/*<Switch thumbTintColor={Colors.primaryButtonBackground}*/}
-                                        {/*trackColor={{false: Colors.placeholder, true: Colors.secondaryButtonBackground}}*/}
-                                        {/*value={value.checked}*/}
-                                        {/*onValueChange={(value) => onListItemClicked(index, value)}/>*/}
-                            </Right>
-                        </ListItem>
-                    );
+                                        <Picker.Item key={STRINGS.folderNone} label={STRINGS.folderNone}
+                                                     value={STRINGS.folderNone}/>
+                                        <Picker.Item key={STRINGS.folderUser} label={STRINGS.folderUser}
+                                                     value={STRINGS.folderUser}/>
+                                        <Picker.Item key={STRINGS.folderManager} label={STRINGS.folderManager}
+                                                     value={STRINGS.folderManager}/>
+                                    </Picker>
+                                    {/*<Switch thumbTintColor={Colors.primaryButtonBackground}*/}
+                                    {/*trackColor={{false: Colors.placeholder, true: Colors.secondaryButtonBackground}}*/}
+                                    {/*value={value.checked}*/}
+                                    {/*onValueChange={(value) => onListItemClicked(index, value)}/>*/}
+                                </Right>
+                            </ListItem>
+                        );
+                    }
                 })}
             </List>
         </ScrollView>

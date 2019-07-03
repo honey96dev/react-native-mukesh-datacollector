@@ -50,11 +50,42 @@ class ReportFolderScreen extends Component<Props> {
     componentDidMount(): void {
         // @ts-ignore
         fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
+        // fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
             .then((response: any) => {
-                // console.log(response);
                 if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listUser2Folders(response.data);
+                    let folders1 = response.data;
+
+                    // @ts-ignore
+                    fetch(GET, api_list.folderList, {})
+                        .then((response: any) => {
+                            if (response.result == STRINGS.success) {
+                                let folders2 = response.data;
+                                for(let folder1 of folders1) {
+                                    folder1['forms'] = [];
+                                    for (let folder2 of folders2) {
+                                        if (folder1._id == folder2._id) {
+                                            for (let form of folder2.forms) {
+                                                if (form['formUse'] == true) {
+                                                    folder1['forms'].push(form);
+                                                }
+                                            }
+                                            // folder1['forms'] = folder2['forms'];
+                                            break;
+                                        }
+                                    }
+                                }
+                                this.props.listUser2Folders(folders1);
+                                // this.props.listManager2Folders(response.data);
+                            } else {
+                                this.props.listUser2Folders([]);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.props.listUser2Folders([]);
+                        });
+
+                    // this.props.listUser2Folders(response.data);
                 } else {
                     this.props.listUser2Folders([]);
                 }
@@ -63,21 +94,81 @@ class ReportFolderScreen extends Component<Props> {
                 console.log(err);
                 this.props.listUser2Folders([]);
             });
-        // @ts-ignore
-        fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
-            .then((response: any) => {
-                // console.log(response);
-                if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listManager2Folders(response.data);
-                } else {
+        if (G.UserProfile.data.role == STRINGS.admin) {
+            // @ts-ignore
+            fetch(GET, api_list.folderList, {})
+                .then((response: any) => {
+                    // console.log(response);
+                    if (response.result == STRINGS.success) {
+                        let folders = response.data;
+                        for (let folder of folders) {
+                            let forms = [];
+                            for (let form of folder['forms']) {
+                                if (form['formUse']) {
+                                    forms.push(form);
+                                }
+                            }
+                            folder['forms'] = forms;
+                        }
+                        // this.props.navigation.navigate(ROUTES.Profile);
+                        this.props.listManager2Folders(response.data);
+                    } else {
+                        this.props.listManager2Folders([]);
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
                     this.props.listManager2Folders([]);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.listManager2Folders([]);
-            });
+                });
+        } else {
+            // @ts-ignore
+            fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager + ',' + STRINGS.folderUser})
+            // fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
+                .then((response: any) => {
+                    // console.log(response);
+                    if (response.result == STRINGS.success) {
+                        let folders1 = response.data;
+
+                        // @ts-ignore
+                        fetch(GET, api_list.folderList, {})
+                            .then((response: any) => {
+                                if (response.result == STRINGS.success) {
+                                    let folders2 = response.data;
+                                    for(let folder1 of folders1) {
+                                        folder1['forms'] = [];
+                                        for (let folder2 of folders2) {
+                                            if (folder1._id == folder2._id) {
+                                                for (let form of folder2.forms) {
+                                                    if (form['formUse'] == true) {
+                                                        folder1['forms'].push(form);
+                                                    }
+                                                }
+                                                // folder1['forms'] = folder2['forms'];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    this.props.listManager2Folders(folders1);
+                                    // this.props.listManager2Folders(response.data);
+                                } else {
+                                    this.props.listManager2Folders([]);
+                                }
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                this.props.listManager2Folders([]);
+                            });
+
+                        // this.props.listManager2Folders(response.data);
+                    } else {
+                        this.props.listManager2Folders([]);
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.props.listManager2Folders([]);
+                });
+        }
     }
 
     onSignOutButtonPressed = () => {
@@ -100,9 +191,10 @@ class ReportFolderScreen extends Component<Props> {
         const self = this;
         const {searchWord} = self.state;
         const {reportProcMode, manager2Folders, user2Folders} = self.props;
-        const folders = reportProcMode == STRINGS.maintenanceMain ? manager2Folders : user2Folders;
-        const searchWord2 = searchWord.length > 2 ? searchWord : '';
         const userRole = G.UserProfile.data.role;
+        const folders = (userRole == STRINGS.admin || reportProcMode == STRINGS.maintenanceMain) ? manager2Folders : user2Folders;
+        const searchWord2 = searchWord.length > 2 ? searchWord : '';
+        // console.log(userRole, folders, manager2Folders, user2Folders);
         return (
             <Container style={styles.container}>
                 <Header
@@ -151,6 +243,9 @@ class ReportFolderScreen extends Component<Props> {
                                             {/*<Label style={Presets.h6.regular}>Modified*/}
                                                 {/*Date: {value.lastModifiedDate}</Label>*/}
                                             </Body>
+                                            <Right>
+                                                <Label style={Presets.h6.regular}>#{value.forms.length}</Label>
+                                            </Right>
                                         </ListItem>
                                     );
                                 }

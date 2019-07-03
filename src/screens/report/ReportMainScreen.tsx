@@ -91,7 +91,33 @@ class ReportMainScreen extends Component<Props> {
             .then((response: any) => {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
-                    this.setState({forms: response.data});
+                    let forms1 = response.data;
+                    // @ts-ignore
+                    fetch(GET, api_list.formList, {folderId: this.props.selectedFolder._id})
+                        .then((response: any) => {
+                            // console.log(response);
+                            if (response.result == STRINGS.success) {
+                                let forms2 = response.data;
+                                for (let form1 of forms1) {
+                                    for (let form2 of forms2) {
+                                        if (form1['_id'] == form2['_id']) {
+                                            form1['reports'] = form2['reports'];
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                this.setState({forms: forms1});
+                                // this.setState({forms: response.data});
+                            } else {
+                                this.setState({forms: []});
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.setState({forms: []});
+                        });
+
                 } else {
                     this.setState({forms: []});
                 }
@@ -111,6 +137,10 @@ class ReportMainScreen extends Component<Props> {
         this.setState({
             showAlert: false,
         })
+    };
+
+    onBackButtonPressed = () => {
+        this.props.navigation.navigate(ROUTES.ReportFolder);
     };
 
     onKeyValueFieldChanged = (key: any, value:any) => {
@@ -146,9 +176,10 @@ class ReportMainScreen extends Component<Props> {
                     <Left style={CommonStyles.headerLeft}>
                         <Button
                             transparent
-                            onPress={() => this.props.navigation.openDrawer()}
+                            onPress={self.onBackButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} name="menu"/>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"}
+                                  name="angle-left"/>
                         </Button>
                     </Left>
                     <Body style={CommonStyles.headerBody}>
@@ -187,7 +218,7 @@ class ReportMainScreen extends Component<Props> {
                                                 {/*onPress={() => self.onDeleteListItemButtonPressed(value)}*/}
                                                 {/*>*/}
                                                 <View style={styles.listItemRight}>
-                                                    {/*<Label style={Presets.h6.regular}>#{value.reports.length}</Label>*/}
+                                                    <Label style={Presets.h6.regular}>#{value.reports.length}</Label>
                                                     <Icon
                                                         style={[Presets.h4.regular, CommonStyles.headerIcon, styles.listItemIcon]}
                                                         type={"FontAwesome5"} name="angle-right"/>
