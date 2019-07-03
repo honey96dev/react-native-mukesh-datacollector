@@ -95,12 +95,12 @@ class ReportListScreen extends Component<Props> {
 
 
     onListItemPressed = (value: any) => {
-        const {selectedFolder} = this.props;
+        const {selectedFolder, reportProcMode} = this.props;
         const folderRole = selectedFolder.userRole;
         // const userRole = G.UserProfile.data.role;
         // console.log(selectedFolder);
         // if (userRole == STRINGS.user2 && this.props.reportProcMode == STRINGS.maintenanceMain)  {
-        if (folderRole == STRINGS.folderUser)  {
+        if (folderRole == STRINGS.folderUser && reportProcMode == STRINGS.maintenanceMain)  {
             return;
         }
         this.props.setCreateReportMode({
