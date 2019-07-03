@@ -112,19 +112,22 @@ class CreateFormScreen extends Component<Props> {
     hideModal = () => {
         this.setState({
             showModal: false,
-        })
+        });
     };
 
     hideAlert = () => {
         this.setState({
             showAlert: false,
-        })
+        });
+        if (this.state.alertTitle == STRINGS.success) {
+            setTimeout(this.onBackButtonPressed, NUMBERS.modalAnimationTiming2);
+        }
     };
 
     hideConfirm = () => {
         this.setState({
             showConfirm: false,
-        })
+        });
     };
 
     onBackButtonPressed = () => {

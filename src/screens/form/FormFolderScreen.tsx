@@ -43,23 +43,23 @@ class FormFolderScreen extends Component<Props> {
         super(props);
     }
 
-    componentDidMount(): void {
-        // @ts-ignore
-        fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
-            .then((response: any) => {
-                // console.log(response);
-                if (response.result == STRINGS.success) {
-                    // this.props.navigation.navigate(ROUTES.Profile);
-                    this.props.listManager2Folders(response.data);
-                } else {
-                    this.props.listManager2Folders([]);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.listManager2Folders([]);
-            });
-    }
+    // componentDidMount(): void {
+    //     // @ts-ignore
+    //     fetch(GET, api_list.user2Folders, {userId: G.UserProfile.data._id, userRoles: STRINGS.folderManager})
+    //         .then((response: any) => {
+    //             // console.log(response);
+    //             if (response.result == STRINGS.success) {
+    //                 // this.props.navigation.navigate(ROUTES.Profile);
+    //                 this.props.listManager2Folders(response.data);
+    //             } else {
+    //                 this.props.listManager2Folders([]);
+    //             }
+    //         })
+    //         .catch(err => {
+    //             console.log(err);
+    //             this.props.listManager2Folders([]);
+    //         });
+    // }
 
     onSignOutButtonPressed = () => {
         // this.props.navigation.navigate(ROUTES.SignIn);

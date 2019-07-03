@@ -29,7 +29,6 @@ class SignInScreen extends Component<Props> {
 
         email: '',
         password: '',
-        // email: 'honeyocs803@outlook.com',
         // email: 'honey96dev@gmail.com',
         // password: '123456',
 

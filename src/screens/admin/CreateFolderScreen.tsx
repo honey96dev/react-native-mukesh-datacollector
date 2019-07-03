@@ -21,7 +21,7 @@ import {
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
 // @ts-ignore
-import {G, STRINGS} from "../../tools";
+import {G, NUMBERS, STRINGS} from "../../tools";
 import {ROUTES} from "../../routes";
 import MyAlert from "../../components/MyAlert";
 import {api_list, fetch, GET, POST, PUT} from "../../apis";
@@ -161,7 +161,10 @@ class CreateFolderScreen extends Component<Props> {
     hideAlert = () => {
         this.setState({
             showAlert: false,
-        })
+        });
+        if (this.state.alertTitle == STRINGS.success) {
+            setTimeout(this.onBackButtonPressed, NUMBERS.modalAnimationTiming2);
+        }
     };
 
     // hideConfirm = () => {

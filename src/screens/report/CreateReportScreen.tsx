@@ -118,7 +118,10 @@ class CreateReportScreen extends Component<Props> {
     hideAlert = () => {
         this.setState({
             showAlert: false,
-        })
+        });
+        if (this.state.alertTitle == STRINGS.success) {
+            setTimeout(this.onBackButtonPressed, NUMBERS.modalAnimationTiming2);
+        }
     };
 
     onBackButtonPressed = () => {

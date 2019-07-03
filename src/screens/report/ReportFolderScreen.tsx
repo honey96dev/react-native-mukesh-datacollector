@@ -194,7 +194,7 @@ class ReportFolderScreen extends Component<Props> {
         const userRole = G.UserProfile.data.role;
         const folders = (userRole == STRINGS.admin || reportProcMode == STRINGS.maintenanceMain) ? manager2Folders : user2Folders;
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
-        // console.log(userRole, folders, manager2Folders, user2Folders);
+        console.log(userRole, folders, manager2Folders, user2Folders);
         return (
             <Container style={styles.container}>
                 <Header

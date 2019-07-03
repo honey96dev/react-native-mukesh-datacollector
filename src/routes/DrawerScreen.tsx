@@ -72,25 +72,34 @@ interface MyProps {
 type Props = MyProps & NavigationScreenProps;
 
 class DrawerScreen extends Component<Props> {
+    state = {
+        navigationAllowed: true,
+        shadowOffsetWidth: 1,
+        shadowRadius: 4,
+    };
     constructor(props: Props) {
         super(props);
-        this.state = {
-            shadowOffsetWidth: 1,
-            shadowRadius: 4,
-        };
     }
 
     onMenuClicked = (route: string, name: string) => {
+        let self = this;
+        if (!self.state.navigationAllowed) {
+            return;
+        }
+        self.setState({navigationAllowed: false});
+        setTimeout(() => {
+            self.setState({navigationAllowed: true});
+        }, 1000);
         if (name == STRINGS.maintenanceMain) {
-            this.props.setReportProcMode(STRINGS.maintenanceMain);
+            self.props.setReportProcMode(STRINGS.maintenanceMain);
         } else if (name == STRINGS.reportMain) {
-            this.props.setReportProcMode(STRINGS.reportMain);
+            self.props.setReportProcMode(STRINGS.reportMain);
         }
         // else {
         //     this.props.setReportProcMode('undefined');
         // }
-        this.props.navigation.navigate(route);
-        this.props.navigation.closeDrawer();
+        self.props.navigation.navigate(route);
+        self.props.navigation.closeDrawer();
     };
 
     render() {
