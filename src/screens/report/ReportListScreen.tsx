@@ -14,7 +14,7 @@ import {
     List,
     ListItem,
     Right,
-    Title, View, Text
+    Title, View, Text, Picker
 } from 'native-base';
 // @ts-ignore
 import {Colors, CommonStyles, Fonts, Metrics, Presets} from '../../theme';
@@ -27,13 +27,14 @@ import MyAlert from "../../components/MyAlert";
 import MyConfirm from "../../components/MyConfirm";
 
 import {connect} from 'react-redux';
-import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode} from '../../actions/reports';
+import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode, setCurrentReports2} from '../../actions/reports';
 
 interface MyProps {
     reportProcMode: string,
     selectedFolder: any,
     selectedFormId: any,
     reports: Array<any>,
+    currentReports2: Array<any>,
     listReport: (items: Array<any>) => void,
     addReport: (item: any) => void,
     deleteReport: (item: any) => void,
@@ -41,6 +42,7 @@ interface MyProps {
     editReport: (prev: any, current: any) => void,
     setSelectedFormId: (data: any) => void,
     setCreateReportMode: (data: any) => void,
+    setCurrentReports2: (data: any[]) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -56,6 +58,7 @@ class ReportListScreen extends Component<Props> {
         confirmMessage: '',
 
         searchWord: '',
+        range: '',
 
         reports: [],
 
@@ -74,15 +77,17 @@ class ReportListScreen extends Component<Props> {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
                     // this.props.navigation.navigate(ROUTES.Profile);
-                    // this.props.listReport(response.data);
-                    this.setState({reports: response.data});
+                    this.props.setCurrentReports2(response.data);
+                    // this.setState({reports: response.data});
                 } else {
-                    this.setState({reports: []});
+                    this.props.setCurrentReports2([]);
+                    // this.setState({reports: []});
                 }
             })
             .catch(err => {
                 console.log(err);
-                this.setState({reports: []});
+                this.props.setCurrentReports2([]);
+                // this.setState({reports: []});
             });
     }
 
@@ -200,9 +205,10 @@ class ReportListScreen extends Component<Props> {
 
     render() {
         const self = this;
-        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord, reports} = self.state;
+        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord, range} = self.state;
 
-        const searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [''];
+        let searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [];
+        searchWord2.push(range);
 
         const {reportProcMode, selectedFolder} = self.props;
         const folderRole = selectedFolder.userRole;
@@ -217,6 +223,8 @@ class ReportListScreen extends Component<Props> {
         //         break;
         //     }
         // }
+        const reports = self.props.currentReports2;
+        let idx = 0;
 
         return (
             <Container style={styles.container}>
@@ -250,6 +258,13 @@ class ReportListScreen extends Component<Props> {
                         <Input style={[styles.credential, Presets.textFont.regular]} value={searchWord} placeholderTextColor={Colors.placeholder} placeholder={STRINGS.search} onChangeText={(text) => self.onKeyValueFieldChanged('searchWord', text)}/>
                         {/*<Icon style={styles.credentialIcon} type={'FontAwesome5'} name={'arrow-right'} onPress={}/>*/}
                     </Item>
+                    <Item regular style={styles.credentialItem}>
+                        <Picker style={styles.picker} selectedValue={range} onValueChange={(value) => self.onKeyValueFieldChanged('range', value)}>
+                            <Picker.Item label={'All'} value={''} />
+                            <Picker.Item label={'Completed'} value={'Completed'} />
+                            <Picker.Item label={'Not Completed'} value={'Not yet'} />
+                        </Picker>
+                    </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
                             {reports.map((value: any, index: number) => {
@@ -272,12 +287,13 @@ class ReportListScreen extends Component<Props> {
                                 // console.log(valueJoinedString, searchWord2);
                                 for (let word of searchWord2) {
                                     if (valueJoinedString.includes(word)) {
+                                        // idx++;
                                         return (
                                             <ListItem key={value._id} style={styles.listItem}
                                                       onPress={() => self.onListItemPressed(value)}>
                                                 <Body style={styles.listItemBody}>
                                                 {/*{self.renderListItemBody(value)}*/}
-                                                <Label style={Presets.h5.regular}>{index + 1}. </Label>
+                                                <Label style={Presets.h5.regular}>{++idx}. </Label>
                                                 <View>
                                                     <Label style={Presets.h5.regular}>{value.byWho}</Label>
                                                     <Label style={Presets.h6.regular}>Modified
@@ -361,6 +377,12 @@ const styles = StyleSheet.create({
     credential: {
         color: Colors.textForeground,
     },
+
+    picker: {
+        // flex: 1,
+        width: '100%',
+        color: Colors.textForeground,
+    },
     scrollSec: {
         width: '100%',
         // marginTop: Metrics.baseDoubleMargin,
@@ -404,6 +426,7 @@ const mapStateToProps = (state: any) => {
         reports: state.reports.items,
         reportProcMode: state.reports.reportProcMode,
         selectedFolder: state.folders.selectedFolder,
+        currentReports2: state.reports.currentReports2,
     }
 };
 
@@ -429,6 +452,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         setCreateReportMode: (data: any) => {
             dispatch(setCreateReportMode(data));
+        },
+        setCurrentReports2: (data: any[]) => {
+            dispatch(setCurrentReports2(data));
         },
     }
 };

@@ -1,4 +1,16 @@
-import {LIST_REPORT, LIST_REPORT_BY_FORM, ADD_REPORT, DELETE_REPORT, DELETE_REPORT_BY_FORM, EDIT_REPORT, SET_SELECTED_FORM_DATA, SET_CREATE_REPORT_MODE, SET_REPORT_PROC_MODE} from '../actions/reports.types';
+import {
+    LIST_REPORT,
+    LIST_REPORT_BY_FORM,
+    ADD_REPORT,
+    DELETE_REPORT,
+    DELETE_REPORT_BY_FORM,
+    EDIT_REPORT,
+    SET_SELECTED_FORM_DATA,
+    SET_CREATE_REPORT_MODE,
+    SET_REPORT_PROC_MODE,
+    SET_CURRENT_REPORTS,
+    SET_CURRENT_REPORTS2
+} from '../actions/reports.types';
 
 const initialState = {
     items: [],
@@ -6,6 +18,8 @@ const initialState = {
     selectedFormColumns: [],
     createReportMode: {},
     reportProcMode: '',
+    currentReports: [],
+    currentReports2: [],
 };
 
 const reportsReducer = (state: any = initialState, action: any) => {
@@ -72,6 +86,16 @@ const reportsReducer = (state: any = initialState, action: any) => {
             return {
                 ...state,
                 reportProcMode: action.payload,
+            };
+        case SET_CURRENT_REPORTS:
+            return {
+                ...state,
+                currentReports: action.payload,
+            };
+        case SET_CURRENT_REPORTS2:
+            return {
+                ...state,
+                currentReports2: action.payload,
             };
         default:
             return state;

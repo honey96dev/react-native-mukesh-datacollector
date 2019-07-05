@@ -30,7 +30,8 @@ import {
     editReport,
     listReport,
     setCreateReportMode,
-    setSelectedFormData
+    setSelectedFormData,
+    setCurrentReports, setCurrentReports2,
 } from '../../actions/reports';
 import {ROUTES} from "../../routes";
 import {G, NUMBERS, STRINGS} from "../../tools";
@@ -53,11 +54,14 @@ interface MyProps {
     setSelectedFormData: (data: any) => void,
     setCreateReportMode: (data: any) => void,
     reportProcMode: string,
+    setCurrentReports: (data: any[]) => void,
+    setCurrentReports2: (data: any[]) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
 
 class CreateReportScreen extends Component<Props> {
+    completed = 'Completed';
     completedArray = [
         {label: 'Completed', value: 'Completed'},
         {label: 'Not yet', value: 'Not yet'},
@@ -108,6 +112,21 @@ class CreateReportScreen extends Component<Props> {
         if (this.props.createReportMode.mode == 'edit') {
             // console.log(this.props.createReportMode.data);
             const newState = Object.assign(this.state, this.props.createReportMode.data);
+            //
+            // const state = this.state;
+            // const saveIgnoreFields = this.saveIgnoreFields;
+            // const completed = true;
+            // // @ts-ignore
+            // Object.entries(state).forEach((entry: any) => {
+            //     let key = entry[0];
+            //     let value = entry[1];
+            //     if (saveIgnoreFields.indexOf(key) == -1) {
+            //         if (value.toString().length == 0) {
+            //
+            //         }
+            //     }
+            // });
+
             this.setState(newState);
         }
     }
@@ -172,14 +191,14 @@ class CreateReportScreen extends Component<Props> {
         // console.log(method, url, params, JSON.stringify(params));
         // return;
 
+        let result: any;
+        let message: any;
+
         // @ts-ignore
         fetch(method, url, params)
             .then((response: any) => {
-                this.setState({
-                    showAlert: true,
-                    alertTitle: response.result,
-                    alertMessage: response.message,
-                });
+                result = response.result;
+                message = response.message;
             })
             .catch((err: any) => {
                 console.log(err);
@@ -208,6 +227,83 @@ class CreateReportScreen extends Component<Props> {
                     // .finally(() => {
                         // this.props.navigation.navigate(ROUTES.FormMain);
                     // });
+
+                const {selectedFolder, selectedFormId} = this.props;
+                // @ts-ignore
+                fetch(GET, api_list.reportListByForm, {folderId: selectedFolder._id, formId: selectedFormId})
+                    .then((response: any) => {
+                        // console.log(response);
+                        if (response.result == STRINGS.success) {
+                            // this.props.navigation.navigate(ROUTES.Profile);
+                            this.props.setCurrentReports2(response.data);
+                            // this.setState({reports: response.data});
+                        } else {
+                            this.props.setCurrentReports2([]);
+                            // this.setState({reports: []});
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.props.setCurrentReports2([]);
+                        // this.setState({reports: []});
+                    });
+
+
+                // @ts-ignore
+                fetch(GET, api_list.folder2Forms, {folderId: this.props.selectedFolder._id})
+                    .then((response: any) => {
+                        // console.log(response);
+                        if (response.result == STRINGS.success) {
+                            let forms = response.data;
+                            let cnt = forms.length;
+                            let idx = 0;
+                            for (let form of forms) {
+                                form['reports'] = [];
+                                // @ts-ignore
+                                fetch(GET, api_list.reportListByForm, {folderId: this.props.selectedFolder._id, formId: form._id})
+                                    .then((response: any) => {
+                                        // console.log(response);
+                                        if (response.result == STRINGS.success) {
+                                            form['reports'] = response.data;
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                                    .finally(() => {
+                                        idx++;
+                                        if (idx == cnt) {
+                                            // this.setState({forms: forms});
+                                            this.props.setCurrentReports(forms);
+                                            this.setState({
+                                                showAlert: true,
+                                                alertTitle: result,
+                                                alertMessage: message,
+                                            });
+                                        }
+                                    });
+                            }
+
+                        } else {
+                            // this.setState({forms: []});
+                            this.props.setCurrentReports([]);
+                            this.setState({
+                                showAlert: true,
+                                alertTitle: result,
+                                alertMessage: message,
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        // this.setState({forms: []});
+                        this.props.setCurrentReports([]);
+                        this.setState({
+                            showAlert: true,
+                            alertTitle: result,
+                            alertMessage: message,
+                        });
+                    });
             });
     };
 
@@ -215,12 +311,14 @@ class CreateReportScreen extends Component<Props> {
         // console.log(key, text);
         this.setState({
             [key]: text,
+            completed: this.completed,
         });
     };
 
     onKeyArrayFieldChanged = (key: string, arr: Array<any>) => {
         this.setState({
             [key]: arr.join(','),
+            completed: this.completed,
         });
     };
 
@@ -251,9 +349,9 @@ class CreateReportScreen extends Component<Props> {
         const reportProcMode = this.props.reportProcMode;
         const self = this;
         const state = self.state;
-        const {showModal, modalTitle, modalMessage, modalValue, showAlert, alertTitle, alertMessage, completed} = state;
+        const {showModal, modalTitle, modalMessage, modalValue, showAlert, alertTitle, alertMessage} = state;
 
-        console.log('completed', completed);
+        // console.log('completed', completed);
         let headerTitle;
         if (reportProcMode == STRINGS.maintenanceMain) {
             if (mode == 'edit') {
@@ -264,6 +362,7 @@ class CreateReportScreen extends Component<Props> {
         } else if (reportProcMode == STRINGS.reportMain) {
             headerTitle = STRINGS.viewReport;
         }
+        self.completed = 'Completed';
         return (
             <Container style={styles.container}>
                 <Header
@@ -300,6 +399,10 @@ class CreateReportScreen extends Component<Props> {
                             {columns.map((column:any) => {
                                 // @ts-ignore
                                 const value = state[column.name];
+                                if (typeof value == 'undefined' || value.toString().length == 0) {
+                                    self.completed = 'Not yet';
+                                    console.log('Not yet', column.name, value);
+                                }
                                 const values = !!column.values ? column.values.split(',') : [];
                                 // const values = (column.values instanceof String) ? column.values.split(',') : [];
                                 let kvValues = [];
@@ -350,15 +453,13 @@ class CreateReportScreen extends Component<Props> {
                                                 // placeholderStyle={{ color: "#bfc6ea" }}
                                                 onValueChange={(value) => self.onKeyValueFieldChanged(column.name, value)}
                                             >
-                                                {values.map((item: any, key: any) => {
-                                                    let label = item.label;
-                                                    let value = item.value;
+                                                {/*{!value && <Picker.Item key={0} label={'(Select)'} value={''}/>}*/}
+                                                <Picker.Item key={0} label={'(Select)'} value={''}/>
+                                                {values.map((item: any, key: number) => {
                                                     return (
-                                                        <Picker.Item key={item} label={item} value={item}/>
+                                                        <Picker.Item key={key + 1} label={item} value={item}/>
                                                     );
                                                 })}
-                                                {/*<Picker.Item label="User1" value="en" />*/}
-                                                {/*<Picker.Item label="Vietnamese" value="vt" />*/}
                                             </Picker>}
                                             {column.type == 'Checkbox' && <View style={{flex: 1, marginTop: Metrics.smallMargin}}>
                                                 <MultiSelect
@@ -406,24 +507,8 @@ class CreateReportScreen extends Component<Props> {
                                 )
                             })}
                             <ListItem style={[styles.listItem]}>
-                                <Item regular style={styles.credentialItem}>
-                                    <Picker
-                                        mode="dropdown"
-                                        // iosHeader="Select Language"
-                                        // iosIcon={<Icon type={"FontAwesome5"} name={"caret-down"} style={{ color: Colors.mainForeground, fontSize: 25 }} />}
-                                        note={false}
-                                        style={[Presets.textFont.regular, styles.picker]}
-                                        selectedValue={completed}
-                                        placeholder={STRINGS.selectRole}
-                                        // placeholderStyle={{ color: "#bfc6ea" }}
-                                        onValueChange={(value) => self.onKeyValueFieldChanged('completed', value)}
-                                    >
-                                        {self.completedArray.map((value, index) => {
-                                            return (
-                                                <Picker.Item key={index} label={value.label} value={value.value}/>);
-                                        })}
-                                    </Picker>
-                                </Item>
+                                <Label style={Presets.h6.regular}>Is Completed</Label>
+                                <Text style={[styles.credential2, Presets.textFont.regular]}>{self.completed}</Text>
                             </ListItem>
                         </List>
                     </ScrollView>
@@ -601,6 +686,12 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         setCreateReportMode: (data: any) => {
             dispatch(setCreateReportMode(data));
+        },
+        setCurrentReports: (data: any[]) => {
+            dispatch(setCurrentReports(data));
+        },
+        setCurrentReports2: (data: any[]) => {
+            dispatch(setCurrentReports2(data));
         },
     }
 };

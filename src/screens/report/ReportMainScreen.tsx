@@ -35,13 +35,15 @@ import {
     listReport,
     setCreateReportMode,
     setReportProcMode,
-    setSelectedFormData
+    setSelectedFormData,
+    setCurrentReports,
 } from '../../actions/reports';
 
 interface MyProps {
     selectedFolder: any,
     reportProcMode: string,
     reports: Array<any>,
+    currentReports: Array<any>,
     listReport: (items: Array<any>) => void,
     addReport: (item: any) => void,
     deleteReport: (item: any) => void,
@@ -50,6 +52,7 @@ interface MyProps {
     setSelectedFormData: (data: any) => void,
     setCreateReportMode: (data: any) => void,
     setReportProcMode: (data: any) => void,
+    setCurrentReports: (data: any[]) => void,
 }
 
 type Props = MyProps & NavigationScreenProps;
@@ -110,45 +113,21 @@ class ReportMainScreen extends Component<Props> {
                             .finally(() => {
                                 idx++;
                                 if (idx == cnt) {
-                                    this.setState({forms: forms});
+                                    // this.setState({forms: forms});
+                                    this.props.setCurrentReports(forms);
                                 }
                             });
                     }
 
-                    // let forms1 = response.data;
-                    // // @ts-ignore
-                    // fetch(GET, api_list.formList, {folderId: this.props.selectedFolder._id})
-                    //     .then((response: any) => {
-                    //         // console.log(response);
-                    //         if (response.result == STRINGS.success) {
-                    //             let forms2 = response.data;
-                    //             for (let form1 of forms1) {
-                    //                 for (let form2 of forms2) {
-                    //                     if (form1['_id'] == form2['_id']) {
-                    //                         form1['reports'] = form2['reports'];
-                    //                         break;
-                    //                     }
-                    //                 }
-                    //             }
-                    //
-                    //             this.setState({forms: forms1});
-                    //             // this.setState({forms: response.data});
-                    //         } else {
-                    //             this.setState({forms: []});
-                    //         }
-                    //     })
-                    //     .catch(err => {
-                    //         console.log(err);
-                    //         this.setState({forms: []});
-                    //     });
-
                 } else {
                     this.setState({forms: []});
+                    this.props.setCurrentReports([]);
                 }
             })
             .catch(err => {
                 console.log(err);
                 this.setState({forms: []});
+                this.props.setCurrentReports([]);
             });
             // .finally(() => {
             //     this.setState({
@@ -192,8 +171,9 @@ class ReportMainScreen extends Component<Props> {
         const searchWord2 = searchWord.length > 2 ? searchWord : '';
 
         const {reportProcMode} = self.props;
-        const {forms} = self.state;
-        // console.log('forms', forms);
+        // const {forms} = self.state;
+        const forms = self.props.currentReports;
+        console.log('forms', forms);
         return (
             <Container style={styles.container}>
                 <Header
@@ -352,6 +332,7 @@ const mapStateToProps = (state: any) => {
         selectedFolder: state.folders.selectedFolder,
         reports: state.reports.items,
         reportProcMode: state.reports.reportProcMode,
+        currentReports: state.reports.currentReports,
     }
 };
 
@@ -380,6 +361,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         setReportProcMode: (data: any) => {
             dispatch(setReportProcMode(data));
+        },
+        setCurrentReports: (data: any[]) => {
+            dispatch(setCurrentReports(data));
         },
     }
 };
