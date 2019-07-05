@@ -29,10 +29,16 @@ import MyConfirm from "../../components/MyConfirm";
 import {connect} from 'react-redux';
 import {listReport, addReport, deleteReport, deleteReportByForm, editReport, setSelectedFormData, setCreateReportMode, setCurrentReports2} from '../../actions/reports';
 
+// @ts-ignore
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+// @ts-ignore
+import RNPrint from 'react-native-print';
+
 interface MyProps {
     reportProcMode: string,
     selectedFolder: any,
     selectedFormId: any,
+    selectedFormColumns: string[],
     reports: Array<any>,
     currentReports2: Array<any>,
     listReport: (items: Array<any>) => void,
@@ -103,6 +109,71 @@ class ReportListScreen extends Component<Props> {
         })
     };
 
+    list2Html = () => {
+        const self = this;
+        const {searchWord, range} = self.state;
+
+        let searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [];
+        searchWord2.push(range);
+
+        const reports = self.props.currentReports2;
+        const columns = self.props.selectedFormColumns;
+
+        let html;
+        let style;
+        let thead;
+        let tbody: string;
+
+        style = '<style>table{font-size:24px;border-spacing:0}td,th{padding-left:5px;padding-right:5px;border:1px solid #ddd}th{color:#fff;background:#4caf50}tr:nth-child(odd){background-color:#f2f2f2}</style>';
+
+        let column: any;
+        thead = '<thead><th>No.</th>';
+        for (column of columns) {
+            thead += sprintf('<th>%s</th>', column.name);
+        }
+        thead += sprintf('<th>%s</th>', 'Completed?');
+        thead += '</thead>';
+
+        let report: any;
+        let index = 0;
+        tbody = '<tbody>';
+        for (report of reports) {
+            let valueJoined: any[] = [];
+            // @ts-ignore
+            Object.entries(report).forEach((entry: any) => {
+                let key = entry[0];
+                let value = entry[1];
+                if (key.indexOf('_id') == -1) {
+                    if (value instanceof Date) {
+                        // @ts-ignore
+                        valueJoined.push(sprintf("%02d/%02/%04d", value.getMonth() + 1, value.getDate(), value.getFullYear()));
+                    } else {
+                        // @ts-ignore
+                        valueJoined.push(String(value));
+                    }
+                }
+            });
+            const valueJoinedString = valueJoined.join(',');
+            // console.log(valueJoinedString, searchWord2);
+            for (let word of searchWord2) {
+                if (valueJoinedString.includes(word)) {
+                    tbody += '<tr>';
+                    tbody += sprintf("<td>%d</td>", ++index);
+                    for (column of columns) {
+                        tbody += sprintf('<td>%s</td>', report[column.name]);
+                    }
+                    tbody += sprintf('<td>%s</td>', report['completed'] == 'Completed' ? 'Completed' : 'Not yet');
+                    tbody += '</tr>';
+                    break;
+                }
+            }
+        }
+        tbody += '</tbody>';
+
+        html = sprintf("<html>%s<table>%s%s</table></html>", style, thead, tbody);
+        return html;
+    };
+
     onBackButtonPressed = () => {
         this.props.navigation.navigate(ROUTES.ReportMain);
     };
@@ -112,6 +183,31 @@ class ReportListScreen extends Component<Props> {
             mode: 'create',
         });
         this.props.navigation.navigate(ROUTES.CreateReport);
+    };
+
+    onPrintButtonPressed = async () => {
+        const html = this.list2Html();
+        await RNPrint.print({
+            html: html,
+        });
+    };
+
+    onPdfButtonPressed = async () => {
+        const html = this.list2Html();
+        const today = new Date();
+        // console.log('html', html);
+        const results = await RNHTMLtoPDF.convert({
+            html: html,
+            fileName: sprintf("DataCollector %04d-%02d-%02d", today.getFullYear(), today.getMonth() + 1, today.getDate()),
+            directory: '',
+            // base64: true,
+        });
+
+        this.setState({
+            showAlert: true,
+            alertTitle: 'Convert to PDF',
+            alertMessage: 'Successfully converted\nFile Name: ' + results.filePath,
+        });
     };
 
     onKeyValueFieldChanged = (key: any, value:any) => {
@@ -187,21 +283,21 @@ class ReportListScreen extends Component<Props> {
                     });
             });
     };
-
-    renderListItemBody = (value: any) => {
-
-        let items: Array<any> = [];
-        Object.entries(value).forEach((entry: any) => {
-            let key = entry[0];
-            let value = entry[1];
-            if (key == '_id' || key == 'formId') return;
-            items.push(
-                <Label style={Presets.h5.regular}>{key}: {value}</Label>
-            )
-        });
-        console.log('items', items);
-        return items;
-    };
+    //
+    // renderListItemBody = (value: any) => {
+    //
+    //     let items: Array<any> = [];
+    //     Object.entries(value).forEach((entry: any) => {
+    //         let key = entry[0];
+    //         let value = entry[1];
+    //         if (key == '_id' || key == 'formId') return;
+    //         items.push(
+    //             <Label style={Presets.h5.regular}>{key}: {value}</Label>
+    //         )
+    //     });
+    //     console.log('items', items);
+    //     return items;
+    // };
 
     render() {
         const self = this;
@@ -243,12 +339,28 @@ class ReportListScreen extends Component<Props> {
                     <Title style={[Presets.h4.bold, CommonStyles.headerTitle]}>{reportProcMode == STRINGS.maintenanceMain ? STRINGS.maintenanceList : STRINGS.reportList}</Title>
                     </Body>
                     <Right style={CommonStyles.headerRight}>
-                        {(reportProcMode == STRINGS.maintenanceMain) && <Button
+                        {reportProcMode == STRINGS.maintenanceMain && <Button
                             transparent
                             onPress={self.onPlusButtonPressed}
                         >
-                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name="plus"/>
+                            <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"} name={"plus"}/>
                         </Button>}
+                        {reportProcMode == STRINGS.reportMain &&
+                        <View style={{flexDirection: 'row', alignItems: 'center',}}>
+                            <Button
+                                transparent
+                                onPress={self.onPrintButtonPressed}
+                            >
+                                <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"}
+                                      name={"print"}/>
+                            </Button>
+                            <Button
+                                transparent
+                                onPress={self.onPdfButtonPressed}
+                            >
+                                <Icon style={[Presets.h3.regular, CommonStyles.headerIcon]} type={"FontAwesome5"}
+                                      name={"file-pdf"}/>
+                            </Button></View>}
                     </Right>
                 </Header>
                 <Content contentContainerStyle={styles.content}>
@@ -423,6 +535,7 @@ const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
         selectedFormId: state.reports.selectedFormId,
+        selectedFormColumns: state.reports.selectedFormColumns,
         reports: state.reports.items,
         reportProcMode: state.reports.reportProcMode,
         selectedFolder: state.folders.selectedFolder,
