@@ -91,32 +91,56 @@ class ReportMainScreen extends Component<Props> {
             .then((response: any) => {
                 // console.log(response);
                 if (response.result == STRINGS.success) {
-                    let forms1 = response.data;
-                    // @ts-ignore
-                    fetch(GET, api_list.formList, {folderId: this.props.selectedFolder._id})
-                        .then((response: any) => {
-                            // console.log(response);
-                            if (response.result == STRINGS.success) {
-                                let forms2 = response.data;
-                                for (let form1 of forms1) {
-                                    for (let form2 of forms2) {
-                                        if (form1['_id'] == form2['_id']) {
-                                            form1['reports'] = form2['reports'];
-                                            break;
-                                        }
-                                    }
+                    let forms = response.data;
+                    let cnt = forms.length;
+                    let idx = 0;
+                    for (let form of forms) {
+                        form['reports'] = [];
+                        // @ts-ignore
+                        fetch(GET, api_list.reportListByForm, {folderId: this.props.selectedFolder._id, formId: form._id})
+                            .then((response: any) => {
+                                // console.log(response);
+                                if (response.result == STRINGS.success) {
+                                    form['reports'] = response.data;
                                 }
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
+                            .finally(() => {
+                                idx++;
+                                if (idx == cnt) {
+                                    this.setState({forms: forms});
+                                }
+                            });
+                    }
 
-                                this.setState({forms: forms1});
-                                // this.setState({forms: response.data});
-                            } else {
-                                this.setState({forms: []});
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            this.setState({forms: []});
-                        });
+                    // let forms1 = response.data;
+                    // // @ts-ignore
+                    // fetch(GET, api_list.formList, {folderId: this.props.selectedFolder._id})
+                    //     .then((response: any) => {
+                    //         // console.log(response);
+                    //         if (response.result == STRINGS.success) {
+                    //             let forms2 = response.data;
+                    //             for (let form1 of forms1) {
+                    //                 for (let form2 of forms2) {
+                    //                     if (form1['_id'] == form2['_id']) {
+                    //                         form1['reports'] = form2['reports'];
+                    //                         break;
+                    //                     }
+                    //                 }
+                    //             }
+                    //
+                    //             this.setState({forms: forms1});
+                    //             // this.setState({forms: response.data});
+                    //         } else {
+                    //             this.setState({forms: []});
+                    //         }
+                    //     })
+                    //     .catch(err => {
+                    //         console.log(err);
+                    //         this.setState({forms: []});
+                    //     });
 
                 } else {
                     this.setState({forms: []});
@@ -169,6 +193,7 @@ class ReportMainScreen extends Component<Props> {
 
         const {reportProcMode} = self.props;
         const {forms} = self.state;
+        // console.log('forms', forms);
         return (
             <Container style={styles.container}>
                 <Header
@@ -199,6 +224,8 @@ class ReportMainScreen extends Component<Props> {
                         <List style={styles.scrollSec}>
                             {forms.map((value: any, index: number) => {
                                 if (value.name.includes(searchWord2)) {
+                                    // console.log(index, value, value.reports, value.reports1, value.columns);
+                                    // console.log(index, JSON.stringify(value));
                                     return (
                                         <ListItem style={styles.listItem}
                                                   onPress={() => self.onListItemPressed(value)}>

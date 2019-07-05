@@ -57,11 +57,33 @@ class ReportListScreen extends Component<Props> {
 
         searchWord: '',
 
+        reports: [],
+
         deletingReportId: -1,
     };
 
     constructor(props: Props) {
         super(props);
+    }
+
+    componentDidMount(): void {
+        const {selectedFolder, selectedFormId} = this.props;
+        // @ts-ignore
+        fetch(GET, api_list.reportListByForm, {folderId: selectedFolder._id, formId: selectedFormId})
+            .then((response: any) => {
+                // console.log(response);
+                if (response.result == STRINGS.success) {
+                    // this.props.navigation.navigate(ROUTES.Profile);
+                    // this.props.listReport(response.data);
+                    this.setState({reports: response.data});
+                } else {
+                    this.setState({reports: []});
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({reports: []});
+            });
     }
 
     hideAlert = () => {
@@ -178,23 +200,23 @@ class ReportListScreen extends Component<Props> {
 
     render() {
         const self = this;
-        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord} = self.state;
+        const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord, reports} = self.state;
 
         const searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [''];
 
-        const {reports, selectedFormId, reportProcMode, selectedFolder} = self.props;
+        const {reportProcMode, selectedFolder} = self.props;
         const folderRole = selectedFolder.userRole;
-        const userRole = G.UserProfile.data.role;
-        let report: any;
-        let reportsByForm: Array<any> = [];
-        for (report of reports) {
-            // console.log(report, selectedFormId);
-            if (report._id == selectedFormId) {
-                // console.log(report);
-                reportsByForm = report.reports;
-                break;
-            }
-        }
+        // const userRole = G.UserProfile.data.role;
+        // let report: any;
+        // let reportsByForm: Array<any> = [];
+        // for (report of reports) {
+        //     // console.log(report, selectedFormId);
+        //     if (report._id == selectedFormId) {
+        //         // console.log(report);
+        //         reportsByForm = report.reports;
+        //         break;
+        //     }
+        // }
 
         return (
             <Container style={styles.container}>
@@ -230,7 +252,7 @@ class ReportListScreen extends Component<Props> {
                     </Item>
                     <ScrollView style={styles.scrollSec}>
                         <List style={styles.scrollSec}>
-                            {reportsByForm.map((value: any, index: number) => {
+                            {reports.map((value: any, index: number) => {
                                 let valueJoined: any[] = [];
                                 // @ts-ignore
                                 Object.entries(value).forEach((entry: any) => {

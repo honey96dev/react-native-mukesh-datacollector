@@ -40,6 +40,7 @@ import sprintfJs from 'sprintf-js';
 import Modal from "react-native-modal";
 
 interface MyProps {
+    selectedFolder: any,
     selectedFormId: any,
     selectedFormColumns: Array<any>,
     reports: Array<any>,
@@ -57,9 +58,9 @@ interface MyProps {
 type Props = MyProps & NavigationScreenProps;
 
 class CreateReportScreen extends Component<Props> {
-    roles = [
-        {label: 'User1', value: 'User1'},
-        {label: 'User2', value: 'User2'},
+    completedArray = [
+        {label: 'Completed', value: 'Completed'},
+        {label: 'Not yet', value: 'Not yet'},
     ];
     // itemTypes = [
     //     {label: 'Text', value: 'Text'},
@@ -95,6 +96,8 @@ class CreateReportScreen extends Component<Props> {
         showAlert: false,
         alertTitle: '',
         alertMessage: '',
+
+        completed: 'Not yet',
     };
 
     constructor(props: Props) {
@@ -148,6 +151,8 @@ class CreateReportScreen extends Component<Props> {
         });
         // @ts-ignore
         params['byWho'] = G.UserProfile.data.name;
+        // @ts-ignore
+        params['folderId'] = this.props.selectedFolder._id;
         // @ts-ignore
         params['formId'] = this.props.selectedFormId;
 
@@ -246,9 +251,9 @@ class CreateReportScreen extends Component<Props> {
         const reportProcMode = this.props.reportProcMode;
         const self = this;
         const state = self.state;
-        const {showModal, modalTitle, modalMessage, modalValue, showAlert, alertTitle, alertMessage} = state;
+        const {showModal, modalTitle, modalMessage, modalValue, showAlert, alertTitle, alertMessage, completed} = state;
 
-        // console.log(columns);
+        console.log('completed', completed);
         let headerTitle;
         if (reportProcMode == STRINGS.maintenanceMain) {
             if (mode == 'edit') {
@@ -400,6 +405,26 @@ class CreateReportScreen extends Component<Props> {
                                     </ListItem>
                                 )
                             })}
+                            <ListItem style={[styles.listItem]}>
+                                <Item regular style={styles.credentialItem}>
+                                    <Picker
+                                        mode="dropdown"
+                                        // iosHeader="Select Language"
+                                        // iosIcon={<Icon type={"FontAwesome5"} name={"caret-down"} style={{ color: Colors.mainForeground, fontSize: 25 }} />}
+                                        note={false}
+                                        style={[Presets.textFont.regular, styles.picker]}
+                                        selectedValue={completed}
+                                        placeholder={STRINGS.selectRole}
+                                        // placeholderStyle={{ color: "#bfc6ea" }}
+                                        onValueChange={(value) => self.onKeyValueFieldChanged('completed', value)}
+                                    >
+                                        {self.completedArray.map((value, index) => {
+                                            return (
+                                                <Picker.Item key={index} label={value.label} value={value.value}/>);
+                                        })}
+                                    </Picker>
+                                </Item>
+                            </ListItem>
                         </List>
                     </ScrollView>
                     </Body>
@@ -545,6 +570,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: any) => {
     // console.log(state);
     return {
+        selectedFolder: state.folders.selectedFolder,
         selectedFormId: state.reports.selectedFormId,
         selectedFormColumns: state.reports.selectedFormColumns,
         reports: state.reports.items,
