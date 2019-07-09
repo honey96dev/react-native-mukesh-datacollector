@@ -167,7 +167,7 @@ class ReportListScreen extends Component<Props> {
                     break;
                 }
             }
-        }
+        }2001
         tbody += '</tbody>';
 
         html = sprintf("<html>%s<table>%s%s</table></html>", style, thead, tbody);
@@ -303,8 +303,8 @@ class ReportListScreen extends Component<Props> {
         const self = this;
         const {showConfirm, confirmTitle, confirmMessage, showAlert, alertTitle, alertMessage, searchWord, range} = self.state;
 
-        let searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [];
-        searchWord2.push(range);
+        let searchWord2 = searchWord.length > 2 ? searchWord.split(' ') : [''];
+        // searchWord2.push(range);
 
         const {reportProcMode, selectedFolder} = self.props;
         const folderRole = selectedFolder.userRole;
@@ -396,46 +396,48 @@ class ReportListScreen extends Component<Props> {
                                     }
                                 });
                                 const valueJoinedString = valueJoined.join(',');
-                                // console.log(valueJoinedString, searchWord2);
-                                for (let word of searchWord2) {
-                                    if (valueJoinedString.includes(word)) {
-                                        // idx++;
-                                        return (
-                                            <ListItem key={value._id} style={styles.listItem}
-                                                      onPress={() => self.onListItemPressed(value)}>
-                                                <Body style={styles.listItemBody}>
-                                                {/*{self.renderListItemBody(value)}*/}
-                                                <Label style={Presets.h5.regular}>{++idx}. </Label>
-                                                <View>
-                                                    <Label style={Presets.h5.regular}>{value.byWho}</Label>
-                                                    <Label style={Presets.h6.regular}>Modified
-                                                        Date: {value.lastModifiedDate}</Label>
-                                                </View>
-                                                {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
-                                                {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
-                                                </Body>
-                                                <Right>
-                                                    {/*{(userRole == STRINGS.admin && reportProcMode == STRINGS.maintenanceMain) && <Button*/}
-                                                    {(folderRole == STRINGS.folderManager && reportProcMode == STRINGS.maintenanceMain) && <Button
-                                                        transparent
-                                                        onPress={() => self.onDeleteListItemButtonPressed(value)}
-                                                    >
-                                                        <Icon
-                                                            style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
-                                                            type={"FontAwesome5"} name="times"/>
-                                                    </Button>}
-                                                    {/*{(userRole == STRINGS.user2 && reportProcMode == STRINGS.reportMain) && <Icon*/}
-                                                    {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
-                                                    {/*type={"FontAwesome5"} name="angle-right"/>}*/}
-                                                    {/*{(userRole == STRINGS.user1) && <Icon*/}
-                                                    {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
-                                                    {/*type={"FontAwesome5"} name="angle-right"/>}*/}
-                                                    {(folderRole == STRINGS.folderUser) && <Icon
-                                                        style={[Presets.h4.regular, CommonStyles.headerIcon]}
-                                                        type={"FontAwesome5"} name="angle-right"/>}
-                                                </Right>
-                                            </ListItem>
-                                        );
+                                if (range == '' || value['completed'] == range) {
+                                    for (let word of searchWord2) {
+                                        if (valueJoinedString.includes(word)) {
+                                            // idx++;
+                                            // console.log(range, value, searchWord2);
+                                            return (
+                                                <ListItem key={value._id} style={styles.listItem}
+                                                          onPress={() => self.onListItemPressed(value)}>
+                                                    <Body style={styles.listItemBody}>
+                                                    {/*{self.renderListItemBody(value)}*/}
+                                                    <Label style={Presets.h5.regular}>{++idx}. </Label>
+                                                    <View>
+                                                        <Label style={Presets.h5.regular}>{value.byWho}</Label>
+                                                        <Label style={Presets.h6.regular}>Modified
+                                                            Date: {value.lastModifiedDate}</Label>
+                                                    </View>
+                                                    {/*<Label style={Presets.h6.regular}>Columns Count: {value._id}</Label>*/}
+                                                    {/*<Label style={Presets.h6.regular}>{value.aaaa}</Label>*/}
+                                                    </Body>
+                                                    <Right>
+                                                        {/*{(userRole == STRINGS.admin && reportProcMode == STRINGS.maintenanceMain) && <Button*/}
+                                                        {(folderRole == STRINGS.folderManager && reportProcMode == STRINGS.maintenanceMain) && <Button
+                                                            transparent
+                                                            onPress={() => self.onDeleteListItemButtonPressed(value)}
+                                                        >
+                                                            <Icon
+                                                                style={[Presets.h3.regular, CommonStyles.headerIcon, styles.listItemDeleteIcon]}
+                                                                type={"FontAwesome5"} name="times"/>
+                                                        </Button>}
+                                                        {/*{(userRole == STRINGS.user2 && reportProcMode == STRINGS.reportMain) && <Icon*/}
+                                                        {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
+                                                        {/*type={"FontAwesome5"} name="angle-right"/>}*/}
+                                                        {/*{(userRole == STRINGS.user1) && <Icon*/}
+                                                        {/*style={[Presets.h4.regular, CommonStyles.headerIcon]}*/}
+                                                        {/*type={"FontAwesome5"} name="angle-right"/>}*/}
+                                                        {(folderRole == STRINGS.folderUser) && <Icon
+                                                            style={[Presets.h4.regular, CommonStyles.headerIcon]}
+                                                            type={"FontAwesome5"} name="angle-right"/>}
+                                                    </Right>
+                                                </ListItem>
+                                            );
+                                        }
                                     }
                                 }
                             })}

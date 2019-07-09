@@ -174,6 +174,8 @@ class CreateReportScreen extends Component<Props> {
         params['folderId'] = this.props.selectedFolder._id;
         // @ts-ignore
         params['formId'] = this.props.selectedFormId;
+        // @ts-ignore
+        params['completed'] = this.completed;
 
         let method;
         let url;
@@ -188,7 +190,7 @@ class CreateReportScreen extends Component<Props> {
             url = api_list.reportAdd;
         }
 
-        // console.log(method, url, params, JSON.stringify(params));
+        console.log(method, url, params, JSON.stringify(params));
         // return;
 
         let result: any;
